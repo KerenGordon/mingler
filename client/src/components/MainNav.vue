@@ -6,10 +6,12 @@
             <img src="../assets/settings.png"> </router-link>
       </el-col>
       <el-col class="grid-content " :lg="{span: 6, offset: 6}" :md="{span: 6, offset: 7}" :sm="{span: 4, offset: 7}" :xs="{span: 4, offset: 6}">
+          <router-link to="/browse">        
           <h2 class="logo">
             Mingler
             <img src="../assets/mingler.png">
           </h2>
+          </router-link>
       </el-col>
       <el-col class="grid-content match-btn" :lg="{span: 2, offset: 6}" :md="{span: 2, offset: 5}" :sm="{span: 2, offset: 7}" :xs="{span: 2, offset: 8}">
         <div v-if="isBrowseScreen" @click="navigate">

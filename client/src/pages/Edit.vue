@@ -111,7 +111,7 @@ a:hover {
 .form {
   display: flex;
   flex-direction: column;
-  width: 70%;
+  width: 90%;
   margin: auto;
   background-color: rgba(239, 237, 234, 0.7);
   box-shadow: 0 0 10px 3px rgba(220, 220, 220, 0.3);
