@@ -5,7 +5,7 @@
 
 "use strict";
 var users = [];
-var usersIdCount = 0;
+var usersIdCount = 100;
 var cl = console.log;
 
 const express = require('express'),
@@ -44,6 +44,10 @@ const io = require('socket.io')(http);
 restartUsers();
 cl('init server  - function - restartUsers: ', users.length)
 
+function getUniqueId(){
+	 usersIdCount++;
+	return usersIdCount;
+}
 //==============================================================================
 function dbConnect() {
 
@@ -333,6 +337,25 @@ app.delete('/data/:objType/:id', function (req, res) {
 
 
 });
+
+//====================================================================================
+// POST - addUser - to array
+app.post('/users/addUser', upload.single('file'), function (req, res) {
+	//console.log('req.file', req.file);
+	 console.log('ADD USER: req.body', req.body.data);
+var userId = getUniqueId();
+var templateUser = { id:userId, likes: {}, dislikes: {}, matches: {}, lastLine: "whatsapp??", photos: []}
+var user = Object.assign(req.body.data,templateUser);
+console.log('ADD USER: new created user:',user)
+users.push(user)
+cl("ADD USER: user added", user);
+res.json(user);
+
+});
+//====================================================================================
+
+
+
 //====================================================================================
 // POST - addUser 
 app.post('/addUser', upload.single('file'), function (req, res) {
@@ -405,13 +428,13 @@ app.get('/logout', function (req, res) {
 //====================================================================================
 // get full list
 app.post('/login', function (req, res) {
-	cl('LOGIN0: data:', req.body.data);
-	cl('LOGIN1: userName:', req.body.data.user, '/pass:', req.body.data.password);
-	var userName = req.body.data.user;
-	var password = req.body.data.password;
+	cl('LOGIN0: req.body.user:', req.body.user);
+	cl('LOGIN1: userName:', req.body.user.login, '/pass:', req.body.user.password);
+	var userName = req.body.user.login;
+	var password = req.body.user.password;
 
 	var currUser = users.find(function (user) {
-		cl('LOGIN 1.5 user-', user.userName)
+		cl('LOGIN 1.5 user-', user.userName, user.password)
 		return (user.userName == userName && user.password == password)
 	})
 	cl('LOGIN2: currUser:', currUser);

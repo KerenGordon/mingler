@@ -1,7 +1,7 @@
 <template>
   <section>
-    <h1> SPLASH SCREEN </h1>
-    <h2> need to check if loggedin and move to login screen </h2>
+    <!--<h1> SPLASH SCREEN </h1>
+    <h2> need to check if loggedin and move to login screen </h2>-->
     <img src="http://10steps.sg/wp-content/uploads/article141/funnycouple_24.jpg">
   </section>
 </template>
@@ -10,16 +10,36 @@
 <script>
 export default {
   name: 'splash',
+  created(){
+    var that = this;
+        console.log('splash: CHECK is seession active - or logged in',this.$store.getters.fetchCurrUser)
+        if(this.$store.getters.fetchCurrUser) {
+        console.log('Splash: user already logged in (exists) - move to BROWSE!!!');
+        setTimeout(function(){that.$router.push('Browse')}, 2000);      
+      }
+      else {
+        console.log('Splash: user not logged in  - move to LOGGIN!!!');
+        setTimeout(function(){that.$router.push('Login')}, 2000);      
+     }
+  },
+
+
   mounted() {
-    console.log('splash: waiting 3 seconds')
+   // console.log('splash: waiting 3 seconds')
     // this.$router.push('Browse');
   },
-  data() {
-    return {
-      msg: 'splash screen',
 
-    }
-  },
+//     watch:{
+// this.$store.getters.curUser: function(cur){
+//   if(!cur){
+//   console.log('SPLASH: user logged in - move to BROWSE');
+// this.$router.push('Browse');
+//   } 
+//   else{
+//    console.log('SPLASH: user logged in - move to BROWSE');
+//    this.$router.push('Login');
+//   } 
+// },
   computed: {
     //  users() {
     //       console.log('this.$store.usersMatched', this.$store.state.usersMatched);

@@ -4,6 +4,8 @@
       <el-col class="grid-content " :lg="{span: 2, offset: 1}" :md="{span: 2, offset: 1}" :sm="{span: 2, offset: 1}" :xs="{span: 2, offset: 1}">
           <router-link to="/edit" class="edit-btn">
             <img src="../assets/settings.png"> </router-link>
+           <div>{{this.currUser.name}}</div>
+            
       </el-col>
       <el-col class="grid-content " :lg="{span: 6, offset: 6}" :md="{span: 6, offset: 7}" :sm="{span: 4, offset: 7}" :xs="{span: 4, offset: 6}">
           <h2 class="logo">
@@ -32,8 +34,13 @@ export default {
   data() {
     return {
       msg: 'Browse screen',
-      isBrowseScreen: true
+      isBrowseScreen: true,
+    //  currUser:  this.$store.state.user.currUser
     }
+  },
+  computed: {
+currUser() {return this.$store.state.user.currUser } 
+
   },
   methods: {
     navigate() {

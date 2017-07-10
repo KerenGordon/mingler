@@ -61,8 +61,8 @@ const state = {
   user2: null,
   lastMatch: {},
   chatUser: {},
+  loginStatus: true
 
-  // lastMatch: []
 };
 
 const getters = {
@@ -78,6 +78,15 @@ const getters = {
   fetchLastMatch(state) {
     console.log('store.getters. last Match', state.lastMatch)
     return state.lastMatch;
+  },
+ fetchCurrUser(state) {
+    console.log('store.getters. Current User', state.currUser)
+    return state.currUser;
+  },
+
+ fetchLoginStatus(state) {
+    console.log('store.getters. LOGIN STATUS', state.loginStatus)
+    return state.loginStatus;
   }
 
 
@@ -88,8 +97,14 @@ const mutations = {
 
   [LOG_OUT](state, { data }) {
     console.log('store.mutation.LOG_Out1: ', data)
-    state.currUser = null;
-    console.log('store.mutation.LOG_Out2: ', state.currUser)
+    state.usersMatched = '';
+    state.usersBrowsed = '';
+    state.currUser = '';
+    state.lastMatch = '';
+    state.chatUser = '';
+    state.loginState = true;
+
+    console.log('store.mutation.LOG_OUT performed: ', state.currUser)
   },
   [LIKE](state, payload) {
     console.log('store.mutation.LIKE1a CURRUSER BEFORE: ', state.currUser, state.currUser.likes)
@@ -108,8 +123,21 @@ const mutations = {
     console.log('store.mutation.LIKE3b LAST MATCH AFTER: ', state.lastMatch)
   },
   [LOG_IN](state, { user }) {
+    console.log('storec.mutation.LOG_IN: status',state.loginStatus)
     console.log('store.mutation.LOG_IN: ', user)
-    state.currUser = user;
+    console.log('TBD - store.mutation.LOG_IN')
+    if (user){
+                 state.currUser = user;
+                  state.loginStatus = true;
+                       console.log('store.mutation.LOG_IN: login approved',state.loginStatus)
+                  }
+    else  {
+                  state.loginStatus = false;
+                      console.log('store.mutation.LOG_IN: login incorrect',state.loginStatus )
+
+                  }
+    
+    // TBD write cookie of loged in
     console.log('store.currUser: ', state.currUser)
   },
   [SND_MSG](state, { data }) {
@@ -118,9 +146,14 @@ const mutations = {
     console.log('store.users: ', state.users)
   },
   [ADD_USER](state, { data }) {
-    console.log('store.mutation.ADD_USER: ', data)
-    state.usersBrowsed.push(data);
-    console.log('store.usersBrowsed: ', state.usersBrowsed)
+    console.log('store.mutation.ADD_USER: Perform LOGIN ', data)
+    var user = {login: data.userName, password: data.password};
+    console.log('store.mutation.ADD_USER: Perform LOGIN with ', user)
+    console.log('TBD - implement login via action')
+    //commit({ type: LOG_IN, user:user }) 
+                    state.currUser = data;
+                  state.loginStatus = true;
+                       console.log('store.mutation.ADD_USER --> LOG_IN:' ,state.loginStatus)
   },
   [GET_MATCHED](state, { users }) {
     console.log('store.mutation.GET_MATCHED1: ', users)
@@ -162,14 +195,9 @@ const mutations = {
 
 const actions = {
   [LOG_OUT](context, payload) {
-    console.log('store.actions.LOG_OUT1:', payload.data)
+    console.log('store.actions.LOG_OUT1', payload)
+    console.log('TBD - implement logout from session')
     context.commit(payload);
-    // var prm = service.logOut(payload);
-    // prm.then(res => {
-    //   payload.user = res;
-    //   console.log('store.actions.LOG_OUT1:' , payload.data)
-    //   context.commit(payload);
-    // })
   },
   [LOG_IN](context, payload) {
     console.log('store.LOG_IN:', payload)
@@ -200,11 +228,11 @@ const actions = {
   },
   [ADD_USER](context, payload) {
     console.log('store.ADD_USER:', payload.data)
-    // var prm = service.addUser(payload); //TODO: finish later
-    // prm.then(res => {
-    //   payload.user = res;
-    //   context.commit(payload);
-    // })
+    var prm = service.addUser(payload); 
+    prm.then(res => {
+      payload.user = res;
+      context.commit(payload);
+    })
   },
   [LIKE](context, payload) {
     console.log('store.LIKE:', payload.data)
