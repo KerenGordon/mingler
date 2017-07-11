@@ -53,9 +53,9 @@ const state = {
   ],
 
   currUser: {
-    id: 1, name: 'lora', gender: 'f', description: 'like to love',
-    userName: '111', password: '111', likes: { '1': true, '2': false }, dislikes: [11], matches: [],
-    lastLine: "whatsapp??", photos: ['http://dreamatico.com/data_images/woman/woman-1.jpg']
+    // id: 1, name: 'lora', gender: 'f', description: 'like to love',
+    // userName: '111', password: '111', likes: { '1': true, '2': false }, dislikes: [11], matches: [],
+    // lastLine: "whatsapp??", photos: ['http://dreamatico.com/data_images/woman/woman-1.jpg']
   },
   // currUser: {},
   user2: null,
@@ -82,6 +82,10 @@ const getters = {
  fetchCurrUser(state) {
     console.log('store.getters. Current User', state.currUser)
     return state.currUser;
+  },
+ fetchChatUser(state) {
+    console.log('store.getters. chat User', state.chatUser)
+    return state.chatUser;
   },
 
  fetchLoginStatus(state) {
@@ -282,8 +286,7 @@ const actions = {
   //   },
   [GET_BROWSED](context, payload) {
     console.log('store.GET_BROWSED.actions1:', payload.data)
-    var prm = service.getBrowsed(state.currUser.id);
-    prm.then(res => {
+    service.getBrowsed(state.currUser.id).then(res => {
       console.log('store.GET_BROWSED.actions2:', res)
       payload.users = res;
       context.commit(payload);

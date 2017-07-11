@@ -90,16 +90,17 @@ app.get('/data/:objType', function (req, res) {
 //======================================================================
 // GETs filtered list
 app.get('/data/:objType/:filter/:id', function (req, res) {
+	console.log('get')
 	const objType = req.params.objType;
 	const filter = req.params.filter;
 	const objId = req.params.id;
 	console.log('Get USERS FILTERED: obj:', objType, ' filter:', filter, ' objId:', objId);
 	var filteredUsers;
 	if (filter === 'matched') { // all that match
-		console.log('Get USERS FILTERED: inside matched');
+		// console.log('Get USERS FILTERED: inside matched');
 	
 		filteredUsers = users.filter(function (user) {
-			console.log('*****Get FILTERED USERS****',  user.matches[objId])
+			// console.log('*****Get FILTERED USERS****',  user.matches[objId])
 			return user.matches[objId] === true;
 		});
 	}
@@ -109,7 +110,7 @@ app.get('/data/:objType/:filter/:id', function (req, res) {
 			return !(user.matches[objId] === true);
 		});
 	}
-	//console.log('Get USERS FILTERED: filtered users:', filteredUsers)
+	console.log('Get USERS FILTERED: filtered users:', filteredUsers)
 	res.json(filteredUsers);
 });
 
@@ -244,14 +245,6 @@ app.put('/likeUser', function (req, res) {
 	res.end();
 });
 
-//====================================================================================
-
-function getUserById(id) {
-	var objUser = users.find(function (user) {
-		return (id === user.id)
-	})
-	return objUser
-}
 //====================================================================================
 //======================================================================
 // GETs restart users
@@ -484,7 +477,7 @@ io.on('connection', function (socket) {
 		console.log('user disconnected');
 	});
 	socket.on('chat message', function (msg) {
-		// console.log('message: ' + msg);
+		console.log('message: ' + msg);
 		io.emit('chat message', msg);
 	});
 });
@@ -494,7 +487,154 @@ function getDocById(id) {
 
 }
 
+// ==================================================================================
+// ==================================================================================
+// ==================================================================================
+// ==================================================================================
+// ==================================================================================
+// ==================================================================================
+var msgs = [];
+var msgsCount = 1;
+//==============================================
+app.get('/', function (req, res) {
+	res.sendFile(__dirname + '/index.html');
+});
+
+//==============================================
+io.on('connection', function (socket) {
+	//====================
+	socket.on('disconnect', function (ev) {
+		console.log('user disconnected, socket.id=', socket.id);
+		//	console.log('users ', users);
+		if (users.length > 0) {
+			var id = socket.id;
+			var idx = users.findIndex(function (user, idx) {
+				console.log('***user ', user, ' socket id = ', id);
+				return user.socketId == id
+				// return idx ;
+			});
+
+			console.log('idx:', idx)
+			// console.log('user:', users[idx])
+			var txt = " user as left the building"
+			var obj = { txt: txt, processed: true, from: "server", type1: "user disconnected" }
+			if (idx >= 0) {
+				console.log('splicing user:', users[idx].nickName)
+				users.splice(idx, 1);
+				sendAll('msg received', obj);
+			}
+		}
+	});
+	//====================
+	socket.on('sendMsg', function (msg) {
+		// console.log('chat.js/sendMsg: ' + msg);
+
+		msg = JSON.parse(msg);
+		msg.processed = true;
+		console.log('chat.js/sendNewMsg.type1: ' + msg.type1);
+		switch (msg.type1) {
+			case 'sendMsgToUser':
+				var from = msg.from;
+				var to    = msg.to;
+				var user1 = getUserById(from);
+				var user2 = getUserById(to);
+				msg.tttttt=1;
+				msgs.push(msg);
+				sendAll('msg received', msg)
+				
+				// if(user1.socket) sendAll("msg sent", msg) io.sockets.sockets[user1.socket].emit(msg);
+				// if(user2.socket) sendAll("msg rcvd", msg) io.sockets.sockets[user2.socket].emit(msg);
+					console.log('**************chat.js/sendMsgToUser: ', msg.from,'/',msg.to);
+				
+				break;
+			case 'typing':
+					console.log('chat.js/typing: ' );
+			break;
+			case 'sendMsgToAll':
+					console.log('chat.js/sendMsgToAll: ' + msg);
+				sendAll('msg received', msg);
+				break;
+			case 'typing':
+					console.log('chat.js/typing: ' + msg);
+				msg.txt = ' is typing...'
+				sendAll('msg received', msg);s
+				break;
+			case 'initUser'://
+					console.log('******************8chat.js/initUser: ' + msg);
+				var idx = getUserIdxById(msg.user);	
+				var id = socket.id;
+				users[idx].socket = id;
+				// pushToUsers(msg, socket);
+				break;
+		}
+
+	});
+});
+
+//====================================================================================
+function getUserById(id) {
+	var objUser = users.find(function (user) {
+		return (id === user.id)
+	})
+	return objUser
+}
+
+//====================================================================================
+function getUserIdxById(id) {
+	return	users.findIndex(user =>user.id === id);
+}
+//==============================================
 
 
+function pushToUsers(msg, socket) {
+	//console.log('user:', msg)
+	// users.push(msg);
+
+	var res = users.find(function (user) {
+		return user.name == msg.name
+	}, msg)
+
+	console.log('push to users: msg.name', msg.name)
+	if (typeof (res) === 'undefined') {
+		console.log('socket: push to users - res is undefined')
+		var user = msg;
+		delete user['type1'];
+		delete user['processed'];
+		//console.log('user:' , user)
+		user.socketId = socket.id;
+		//	console.log('********************user:', user)
+		users.push(user);
+		//	console.log('users:', users)
+	}
+	sendAll('updateUsers')
+}
+
+//==============================================
+function sendAll(method1, msg) {
+	console.log('sendAll: : ', msg);
+	msg.at = Date.now();
+	msg.id = msgsCount + 1;
+	msgsCount++
+	msgs.push(msg);
+	// console.log('msgs :' , msgs)
+	if (msg.type1 === 'typing') {
+		deleteTypingMsg(msg)
+	}
+
+	console.log('send all:msgs length:', msgs.length)
+		var txt = JSON.stringify(msg)
+		io.emit(method1, txt);
+		console.log('sendAll2- msg sent:')
+
+}
+//==============================================
+function deleteTypingMsg(msg) {
+	setTimeout(() => {
+		var idx = msgs.findIndex(function (msg1) {
+			return msg.id === msg1.id;
+		})
+		msgs.splice(idx, 1);
+	}, 4000)
+}
 cl('WebSocket is Ready');
 

@@ -14,7 +14,8 @@
     <button @click="logIn">log in</button>
     <button @click="logOut">log out</button>
 
-    rrt-{{currUser.id}}-rrr
+    currUser-{{currUser.id}}-//
+    chatUser-{{chatUser.id}}--//
   </div>
 </template>
 
@@ -43,7 +44,8 @@ export default {
     return {
       msg: 'Ilans Component',
       currUser: this.$store.state.user.currUser,
-      user : {}
+      user : {},
+      chatUser:this.$store.state.user.chatUser
     }
   },
   methods: {

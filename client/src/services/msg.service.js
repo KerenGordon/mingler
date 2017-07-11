@@ -7,29 +7,24 @@ const msgLocalId = 0;
 
 const onlineUsers = [];
 var nickName = lorem();
-const currUser = {nickName:nickName};
-//const socket = ioClient('http://localhost:3003');
+// const currUser =   $store.getters.fetchCurrUser;
+
+const socket = ioClient('http://localhost:3003');
 //const socket = ioClient('http://localhost:3003');
 
 
-//console.log('socket!!!!!!-', socket);
-//sendUser();
+console.log('socket!!!!!!-', socket);
+// sendUser();
 
 
 //==============================================
 socket.on('msg received', function (strMsg) {
     var msg = JSON.parse(strMsg);
     
-    // JIF
-    if (nickName === msg.from && msgs.length>0) {
-            console.log('msgs len', msg);
-          msgs[msgs.length-1].processed = true;
-            // console.log('msg.anickName === msg.from-', msg);
-    }else {
-        console.log('msg.atFormated-', msg);
+        console.log('msg.service.socket.on-', msg);
         msgs.push(msg);
-        if(msg.type1 == 'typing') deleteTypingMsg(msg)
-    }
+        console.log('msg.service.socket.on. msgs.length-', msgs[msgs.length-1]);
+        // if(msg.type1 == 'typing') deleteTypingMsg(msg)
     msg.atFormated= moment(msg.at).format('HH:mm');
 });
 //==============================================
@@ -54,9 +49,10 @@ const getOnlineUsers = () =>{
 }
 //==============================================
  const send = (msg) => {
-    console.log('send msg service, type1:', msg.type1)
+    console.log('msg.service.send:, type1:', msg.type1)
     //msg.type = 'msg';
-    if(msg.type1 !== 'typing' ) msgs.push(msg);
+    //if(msg.type1 !== 'typing' ) msgs.push(msg);
+    console.log('msg',msgs)
     socket.emit('sendMsg', JSON.stringify(msg));
  }
 //==============================================
@@ -65,14 +61,18 @@ const getOnlineUsers = () =>{
     socket.emit('sendMsg', JSON.stringify(msg));
  }
 //==============================================
- function sendUser(){
-    currUser.type1 = 'sendUser';
-    console.log('send user:', currUser)
-    socket.emit('sendMsg', JSON.stringify(currUser));
+ const closeSocket = () => {
+    msg.type = 'msg.service.closeSocket';
+    // socket.disconnect();
  }
 //==============================================
-
-
+ const sendUser = (msg) => {
+    console.log('send user:', currUser)
+    msg.type = 'sendUser';
+    socket.emit('sendMsg', JSON.stringify(msg));
+ }
+//==============================================
+//==============================================
 function lorem(size=5)
 {
     var text = "";
