@@ -71,7 +71,6 @@ export default {
 
 <style lang="scss" scoped>
 
-
 .form-login {
   display: flex;
   flex-direction: column;
