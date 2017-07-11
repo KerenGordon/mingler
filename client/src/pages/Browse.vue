@@ -1,38 +1,31 @@
 <template>
   <div>
-      <md-card class="browse">
-        <md-card-media>
-          <!--swiper -->
-          <swiper :options="swiperOption" ref="mySwiper">
-            <swiper-slide v-for="user in users" :key="user" class="grid-content card" onSlideChangeEnd="onSwipe">
-              <div class="img-container" >
-                <img :src="user.photos && user.photos[0]">
-              </div>
-              <div class="user-details">
-                <h3>{{ user.name }}, {{ user.age }}</h3>
-                <p> {{ user.description }} </p>
-              </div>
-            </swiper-slide>
-          </swiper>
-        </md-card-media>
-      </md-card>
-    
-      <section class="actions">
-        <a href="#" @click.prevent="userDislike">
-          <md-icon class="material-icons md-size-2x dislike">highlight_off</md-icon>
-        </a>
-        <a @click.prevent="userLike">
-          <md-icon class="material-icons md-size-2x like">favorite</md-icon>
-        </a>
-      </section>
-  <!--<md-dialog-alert
-    :md-title="match.title"
-    :md-content-html="match.contentHtml"
-    @open="onOpen"
-    @close="onClose"
-    ref="match">
-  </md-dialog-alert>-->
-    </div>
+    <md-card class="browse">
+      <md-card-media>
+        <swiper :options="swiperOption" ref="mySwiper">
+          <swiper-slide v-for="user in users" :key="user" class="grid-content card" onSlideChangeEnd="onSwipe">
+            <div class="img-container">
+              <img :src="user.photos && user.photos[0]">
+            </div>
+            <div class="user-details">
+              <h4>{{ user.name }}, {{ user.age }}</h4>
+              <p> {{ user.description }} </p>
+            </div>
+          </swiper-slide>
+        </swiper>
+      </md-card-media>
+    </md-card>
+  
+    <section class="actions">
+      <a href="#" @click.prevent="userDislike">
+        <md-icon class="material-icons md-size-2x dislike">highlight_off</md-icon>
+      </a>
+      <a @click.prevent="userLike">
+        <md-icon class="material-icons md-size-2x like heart">favorite</md-icon>
+      </a>
+    </section>
+    </md-dialog-alert>
+  </div>
 </template>
 
 <script>
@@ -71,8 +64,6 @@ export default {
           this.currentUserIdx = swiper.realIndex;
         },
       },
-      // users1: ''
-      //currentUser:''
     }
   },
   created() {
@@ -111,7 +102,7 @@ export default {
       const msg = { id1: this.$store.state.user.currUser.id, id2: this.currentUser.id, bul: false }
       this.$store.dispatch({ type: LIKE, data: msg })
       this.currentUserIdx = (this.users.length - 1 === this.currentUserIdx) ? 0 : this.currentUserIdx + 1;
-      this.$refs.mySwiper.swiper.slideTo(this.currentUserIdx+1);
+      this.$refs.mySwiper.swiper.slideTo(this.currentUserIdx + 1);
     },
     userLike() {
       this.newMatchFlag = true;
@@ -119,7 +110,7 @@ export default {
       const msg = { id1: this.$store.state.user.currUser.id, id2: this.currentUser.id, bul: true }
       this.$store.dispatch({ type: LIKE, data: msg })
       this.currentUserIdx = (this.users.length - 1 === this.currentUserIdx) ? 0 : this.currentUserIdx + 1;
-      this.$refs.mySwiper.swiper.slideTo(this.currentUserIdx+1);
+      this.$refs.mySwiper.swiper.slideTo(this.currentUserIdx + 1);
     },
     viewMatches() {
       console.log('Browse: clicked on "VEIW MATCHES"')
@@ -138,12 +129,7 @@ export default {
 
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
-.browse {
-  background: transparent;
-}
-
 .swiper-container {
   width: 25em!important;
   max-height: 100%;
@@ -151,39 +137,46 @@ export default {
 }
 
 .card {
-  background-color: rgba(230, 230, 230, 0.9);
-  box-shadow: 0 0 30px 10px rgba(220, 220, 220, 0.6); // box-shadow: 0 0 15px 10px rgba(165,154,154,0.9) ;  
+  background-color: rgba(250, 230, 230, 0.9);
+  border: 1px solid lightgrey;
   .user-details>p {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: clip ellipsis;
   }
 }
-
-.like {
-  color: red;
-  opacity: 0.9;
-  cursor: pointer;
-  &:hover {
-    opacity: 1;
-  }
-}
-
 .actions {
-  padding: 1em;
-  margin: {
-    left: 5em;
-    right: 5em;
+  padding: {
+    top: 1em;
+    left: 3em;
+    right: 3em;
+    bottom: 1em;
   }
   display: flex;
-  justify-content: space-around;
-  min-height: 5%;
+  justify-content: space-between;
+  flex-wrap:wrap;
+  box-shadow: 0 0 10px 1px rgba(0, 0, 0, 0.35) inset;
+  .like {
+    color: red;
+    opacity: 0.9;
+    cursor: pointer;
+    &:hover {
+      opacity: 1;
+    }
+  }
+  .dislike {
+    color: rgba(124, 1, 87, 1);
+    opacity: 0.8;
+    cursor: pointer;
+    &:hover {
+      opacity: 1;
+    }
+  }
 }
 
 .img-container {
   width: 30em;
-  height: 25em;
-  ;
+  height: 23em;
   overflow: hidden;
   margin-top: 1em;
   position: relative;
@@ -193,13 +186,21 @@ export default {
     margin: auto;
     min-height: 100%;
     min-width: 100%;
-
-    /* For the following settings we set 100%, but it can be higher if needed 
-    See the answer's update */
     left: -100%;
     right: -100%;
     top: -100%;
     bottom: -100%;
   }
 }
+
+.heart {
+ cursor: pointer;
+ height: 50px;
+ width: 50px;
+ background-image:url('https://abs.twimg.com/a/1446542199/img/t1/web_heart_animation.png');
+ background-position: left;
+ background-repeat:no-repeat;
+ background-size:2900%;
+}
+
 </style>
