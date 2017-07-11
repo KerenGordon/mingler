@@ -11,6 +11,7 @@
           <el-input type="password" class="input" v-model="user.password" auto-complete="off"></el-input>
         </el-row>
       </el-form-item>
+
       <h3 v-if="this.loginStatus" class="warning-message"> Wrong username or password</h3>
       <el-form-item prop="pass">
         <el-button type="accent" @click.stop="submitForm"> Log in</el-button>
@@ -62,15 +63,14 @@ export default {
     submitForm() {
       console.log('LOGIN: submit form clicked: ', this.user)
       this.$store.dispatch({ type: LOG_IN, user: this.user })
-    }
 
+    }
   }
 }
   
 </script>
 
 <style lang="scss" scoped>
-
 
 .form-login {
   display: flex;

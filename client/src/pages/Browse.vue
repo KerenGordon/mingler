@@ -33,37 +33,6 @@
     ref="match">
   </md-dialog-alert>-->
     </div>
-  <!--
-  <section v-if="users" class="browse-screen">
-  
-    <div class="app-header">
-      <div class="app-header-buttons">
-        <button @click="moveToEdit">Edit</button>
-        <button @click="moveToMatches">Matches</button>
-      </div>
-    </div>
-  
-    <div class="user-image-container">
-      {{this.currentUser.src}}
-      <img v-if="currentUser.photos" class='user-image' :src="this.currentUser.photos[0]"> 
-      <img v-if="currentUser.photos" class='user-image' :src="this.currentUser.photos[0]"></img>
-    </div>
-    <div> {{this.currentUser.name}}, {{this.currentUser.birth}}</div>
-    <div v-if="newMatch" class="match-popup">
-      <h1>Congratulations - You have a NEW MATCH! </h1>
-      <h2>You and {{this.newMatch.name}} like each other</h2>
-      <img class="popup-image" :src="this.newMatch.photos[0]"></img>
-      <div class="popup-buttons">
-        <button @click="closePopup">CLOSE</button>
-        <button @click="viewMatches">View Matches</button>
-      </div>
-    </div>
-    <div class="app-footer-buttons">
-      <button @click="userDislike">DISLIKE</button>
-      <button @click="userLike">LIKE</button>
-    </div>
-  </section>
-  -->
 </template>
 
 <script>
@@ -83,14 +52,6 @@ export default {
       msg: 'Browse screen',
       newMatchFlag: false,
       currentId: 'TBD - need to grab ID from click',
-      users22: [
-        { id: 1, name: 'lora', gender: 'f', birth: '1990', description: 'like to love', userName: '111', password: '111', likes: [2], dislikes: [11], matches: [], lastLine: "whatsapp??", photos: ['http://dreamatico.com/data_images/woman/woman-1.jpg'] },
-        { id: 2, name: 'chen', gender: 'f', birth: '1991', description: 'love to love', userName: '222', password: '222', likes: [], dislikes: [45], matches: [], lastLine: "hola??", photos: ['http://dreamatico.com/data_images/woman/woman-2.jpg'] },
-        { id: 3, name: 'keren', gender: 'f', birth: '1992', description: 'love to love', userName: '333', password: '333', likes: [], dislikes: [45], matches: [], lastLine: "daaa??", photos: ['http://dreamatico.com/data_images/woman/woman-3.jpg'] },
-        { id: 4, name: 'inbar', gender: 'f', birth: '1993', description: 'love to love', userName: '444', password: '444', likes: [], dislikes: [45], matches: [], lastLine: "dooo??", photos: ['http://dreamatico.com/data_images/woman/woman-4.jpg'] },
-        { id: 11, name: 'assaf', gender: 'm', birth: '1994', description: 'love is in the air', userName: '555', password: '555', likes: [2], dislikes: [1, 5], matches: [], lastLine: "whatsapp??", photos: ['http://dreamatico.com/data_images/woman/woman-5.jpg'] },
-        { id: 12, name: 'ilan', gender: 'm', birth: '1995', description: 'like to lora', userName: '666', password: '666', likes: [1, 2], dislikes: [3], matches: [], lastLine: "whatsapp??", photos: ['http://dreamatico.com/data_images/woman/woman-6.jpg'] }
-      ],
       currentUserIdx: 0,
       swiperOption: {
         effect: 'coverflow',
@@ -216,10 +177,11 @@ export default {
   }
   display: flex;
   justify-content: space-around;
+  min-height: 5%;
 }
 
 .img-container {
-  width: 25em;
+  width: 30em;
   height: 25em;
   ;
   overflow: hidden;
