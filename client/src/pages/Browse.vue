@@ -6,7 +6,7 @@
           <swiper :options="swiperOption" ref="mySwiper">
             <swiper-slide v-for="user in users" :key="user" class="grid-content card" onSlideChangeEnd="onSwipe">
               <div class="img-container" >
-                <img :src="user.photos && user.photos[0]">
+                <img class="img-in-swiper" :src="user.photos && user.photos[0]">
               </div>
               <div class="user-details">
                 <h3>{{ user.name }}, {{ user.age }}</h3>
@@ -25,6 +25,10 @@
           <md-icon class="material-icons md-size-2x like">favorite</md-icon>
         </a>
       </section>
+ 
+ 
+ 
+ 
   <!--<md-dialog-alert
     :md-title="match.title"
     :md-content-html="match.contentHtml"

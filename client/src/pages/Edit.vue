@@ -8,7 +8,7 @@
     <h2 >Create your new account</h2>
     <el-button size="mini"  @click.stop="logoutUser">already have an account? Login</el-button>
     </div>
-   
+<!--<h4>{{currUser.name}}</h4>-->
     <el-form class="form" label-width="12em" label-position="top">
       <el-form-item>
         <el-col :span="11" :xs="24">
@@ -89,6 +89,10 @@ export default {
       }
       }
   },
+
+  // created(){
+  //   user.name:
+  // }
    watch:{
       currUser: function(userExist){
       console.log('EDIT: user logged in - move to BROWSE?');
