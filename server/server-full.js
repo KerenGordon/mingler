@@ -44,8 +44,8 @@ const io = require('socket.io')(http);
 restartUsers();
 cl('init server  - function - restartUsers: ', users.length)
 
-function getUniqueId(){
-	 usersIdCount++;
+function getUniqueId() {
+	usersIdCount++;
 	return usersIdCount;
 }
 //==============================================================================
@@ -94,12 +94,14 @@ app.get('/data/:objType/:filter/:id', function (req, res) {
 	const filter = req.params.filter;
 	const objId = req.params.id;
 	console.log('Get USERS FILTERED: obj:', objType, ' filter:', filter, ' objId:', objId);
+
+
 	var filteredUsers;
 	if (filter === 'matched') { // all that match
 		console.log('Get USERS FILTERED: inside matched');
-	
+
 		filteredUsers = users.filter(function (user) {
-			console.log('*****Get FILTERED USERS****',  user.matches[objId])
+			//	console.log('*****Get FILTERED USERS****',  user.matches[objId])
 			return user.matches[objId] === true;
 		});
 	}
@@ -147,10 +149,10 @@ app.get('/data/:objType/:filter/:id', function (req, res) {
 //======================================================================
 // GETs log out
 app.post('/logOut', function (req, res) {
-		// const objType = req.params.objType;
-		cl('logOut:', req.body.data);
-		res.json(req.body.data)
-	});
+	// const objType = req.params.objType;
+	cl('logOut:', req.body.data);
+	res.json(req.body.data)
+});
 //======================================================================
 // function getAllUsers() {
 // 	return dbConnect().then(db => {
@@ -243,6 +245,13 @@ app.put('/likeUser', function (req, res) {
 	console.log('LIKE: End of LIKE function');
 	res.end();
 });
+
+//====================================================================================
+
+function getUserIdxById(id) {
+	var index = users.findIndex((user) => user.id === id);
+	return index;
+}
 
 //====================================================================================
 
@@ -339,21 +348,30 @@ app.delete('/data/:objType/:id', function (req, res) {
 });
 
 //====================================================================================
-// POST - addUser - to array
+// POST - addUser (or update data) - to array
 app.post('/users/addUser', upload.single('file'), function (req, res) {
 	//console.log('req.file', req.file);
-	 console.log('ADD USER: req.body', req.body.data);
-var userId = getUniqueId();
-var photos=[];
-photos.push(`https://thechive.files.wordpress.com/2012/01/beautiful-women-${Math.floor(Math.random()*36)}.jpg`)
-	 console.log('*******ADD USER: image address', photos);
-var templateUser = { id:userId, likes: {}, dislikes: {}, matches: {}, lastLine: "whatsapp??", photos: photos}
-var user = Object.assign(req.body.data,templateUser);
-console.log('ADD USER: new created user:',user)
-users.push(user)
-cl("ADD USER: user added", user);
-res.json(user);
-
+	var user;
+	console.log('ADD USER: ** req.body.DATA **', req.body.data);
+	if (req.body.data.id) {
+		console.log('ADD USER: USER exist (ID) - only update existing user)')
+		user = req.body.data;
+		var idx = getUserIdxById(user.id);
+		splice(idx, 1, user);
+	}
+	else {
+		console.log('ADD USER: NEW USER  (NO ID) - create new user)')
+		var userId = getUniqueId();
+		var photos = [];
+		photos.push(`https://thechive.files.wordpress.com/2012/01/beautiful-women-${Math.floor(Math.random() * 36)}.jpg`)
+		console.log('*******ADD USER: image address', photos);
+		var templateUser = { id: userId, likes: {}, dislikes: {}, matches: {}, lastLine: "whatsapp??", photos: photos }
+		user = Object.assign(req.body.data, templateUser);
+		console.log('ADD USER: new created user:', user)
+		users.push(user)
+		cl("ADD USER: user added", user);
+	}
+	res.json(user);
 });
 //====================================================================================
 

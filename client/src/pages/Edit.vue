@@ -32,8 +32,8 @@
   
         <el-form-item label="Gender">
           <el-radio-group v-model="user.gender">
-            <el-radio label="Male"></el-radio>
-            <el-radio label="Female"></el-radio>
+            <el-radio label="Male" value="m" ></el-radio>
+            <el-radio label="Female" value="f"></el-radio>
           </el-radio-group>
         </el-form-item>
   
@@ -78,6 +78,7 @@ export default {
     return {
       //currUser:  this.$store.state.user.currUser,
       user: {
+     //   id: '',
         name: '',
         birth: '',
         gender: '',
@@ -90,9 +91,11 @@ export default {
       }
   },
 
-  // created(){
-  //   user.name:
-  // }
+  created(){
+    var currUserInit = this.$store.getters.fetchCurrUser;
+    console.log ('Edit - created - currUserInit:' , currUserInit)
+    if(currUserInit) this.user = currUserInit;
+ },
    watch:{
       currUser: function(userExist){
       console.log('EDIT: user logged in - move to BROWSE?');
@@ -160,7 +163,7 @@ a:hover {
 .form {
   display: flex;
   flex-direction: column;
-  width: 70%;
+  width: 90%;
   margin: auto;
   background-color: rgba(239, 237, 234, 0.7);
   box-shadow: 0 0 10px 3px rgba(220, 220, 220, 0.3);
