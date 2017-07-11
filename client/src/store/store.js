@@ -52,11 +52,12 @@ const state = {
     }
   ],
 
-  currUser: {
-    id: 1, name: 'lora', gender: 'f', description: 'like to love',
-    userName: '111', password: '111', likes: { '1': true, '2': false }, dislikes: [11], matches: [],
-    lastLine: "whatsapp??", photos: ['http://dreamatico.com/data_images/woman/woman-1.jpg']
-  },
+  currUser: '',
+  //{
+    // id: 1, name: 'lora', gender: 'f', description: 'like to love',
+    // userName: '111', password: '111', likes: { '1': true, '2': false }, dislikes: [11], matches: [],
+    // lastLine: "whatsapp??", photos: ['http://dreamatico.com/data_images/woman/woman-1.jpg']
+  //},
   // currUser: {},
   user2: null,
   lastMatch: {},
@@ -282,12 +283,17 @@ const actions = {
   //   },
   [GET_BROWSED](context, payload) {
     console.log('store.GET_BROWSED.actions1:', payload.data)
+ //   if(state.currUser.id){
     var prm = service.getBrowsed(state.currUser.id);
     prm.then(res => {
       console.log('store.GET_BROWSED.actions2:', res)
       payload.users = res;
       context.commit(payload);
     })
+ // }
+ // else {
+ //   console.log('STORE - ACTION - GED_BROWSED: opertion cancelled - NO USER')
+//  }
   },
   [GET_MATCHED](context, payload) {
     console.log('store.GET_MATCHED.actions1:', payload.data)
