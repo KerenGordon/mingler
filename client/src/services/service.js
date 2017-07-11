@@ -34,11 +34,12 @@ const sendMsg = msg => {
 }
 //=====================================================================
 const addUser = msg => {
-      console.log('service.addUser1:', msg);
-  return serverService.addUser(msg)
-    // .then(function (response) {
-   //   console.log('service.addUser2:', response.data.data);
-    // })
+      console.log('service.addUser start:', msg);
+  return axios.post('http://localhost:3003/users/addUser', msg)
+    .then(function (response) {
+      console.log('service.addUser response:', response);
+      return response.data;
+    })
 }
 //=====================================================================
 const logIn = msg => {
