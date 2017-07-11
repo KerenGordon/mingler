@@ -24,7 +24,6 @@ export default {
 
 #app {
   @import url('https://fonts.googleapis.com/css?family=Kurale');
-  box-shadow: 0 0 23px 16px rgba(0, 0, 0, 0.2);
   font-family: 'Kurale', Helvetica, Arial, sans-serif;
   text-align: center;
   color: #652456;
@@ -36,7 +35,7 @@ export default {
 }
 
 .navbar {
-  box-shadow: 0 0 10px 1px rgba(0,0,0,0.35) inset;
+  border-bottom: 1px solid lightgrey;
 }
 
 body {

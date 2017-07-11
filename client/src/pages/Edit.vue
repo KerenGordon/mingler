@@ -1,21 +1,22 @@
 <template>
   <section class="user-zone">
     <div v-if="currUser" class="edit-header">
-    <h2 >Edit your profile</h2>
-        <el-button size="mini"  @click.stop="logoutUser">Logout</el-button>
+      <h2 >Edit your profile</h2>
+      <el-button size="mini"  @click.stop="logoutUser">Logout</el-button>
     </div>
-      <div v-else="currUser" class="edit-header">
+      <div v-else class="edit-header">
     <h2 >Create your new account</h2>
     <el-button size="mini"  @click.stop="logoutUser">already have an account? Login</el-button>
     </div>
    
-    <el-form class="form" label-width="12em" label-position="top">
+    <el-form class="form" label-position="top">
       <el-form-item>
         <el-col :span="11" :xs="24">
           <el-input v-model="user.name" class="input" placeholder="Your Name"></el-input>
         </el-col>
         <el-col :span="11" :offset=2 :xs="{span:24, offset:0}">
-          <el-date-picker type="date" placeholder="Date of birth" v-model="user.birth" style="width: 100%;"></el-date-picker>
+          <el-date-picker type="date" placeholder="Date of birth" v-model="user.birth"
+           style="width: 100%;"></el-date-picker>
         </el-col>
       </el-form-item>
       <el-form-item>
@@ -23,14 +24,13 @@
           <el-input v-model="user.userName" class="input" placeholder="Choose username"></el-input>
         </el-col>
         <el-col :span="11" :offset=2 :xs="{span:24, offset:0}">
-          <el-input type="password" class="input" placeholder="Choose password" v-model="user.password" auto-complete="off"></el-input>
+          <el-input type="password" class="input" placeholder="Choose password" v-model="user.password" 
+          auto-complete="off"></el-input>
         </el-col>
-      </el-form-item>
-      <el-form-item prop="pass">
       </el-form-item>
       <section class="details">
   
-        <el-form-item label="Gender">
+        <el-form-item label="Gender" class="form-item">
           <el-radio-group v-model="user.gender">
             <el-radio label="Male"></el-radio>
             <el-radio label="Female"></el-radio>
@@ -132,12 +132,15 @@ export default {
 
 .edit-header{
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
+  width: 90%;
+  margin: auto;
 
 }
 
 .el-button--mini {
     height: 2em;
+    align-self: center;
 }
 a {
   color: #652456;
@@ -157,20 +160,23 @@ a:hover {
   display: flex;
   flex-direction: column;
   width: 90%;
+  max-height: 100%;
   margin: auto;
   background-color: rgba(239, 237, 234, 0.7);
   box-shadow: 0 0 10px 3px rgba(220, 220, 220, 0.3);
   padding: {
-    top: 3em;
-    left: 3em;
-    right: 3em;
+    top: 2em;
+    left: 2em;
+    right: 2em;
+    bottom: 0;
+  }
+  .form-item {
+    margin: 0;
   }
 }
-
 
 .details {
   display: flex;
   justify-content: space-around;
 }
 </style>
-

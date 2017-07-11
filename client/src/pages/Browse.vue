@@ -1,22 +1,22 @@
 <template>
   <div>
     <md-card class="browse">
-      <md-card-media>
+      <md-card-media v-if="!newMatch">
         <swiper :options="swiperOption" ref="mySwiper">
-          <swiper-slide v-for="user in users" :key="user" class="grid-content card" onSlideChangeEnd="onSwipe">
+          <swiper-slide v-for="(user, idx) in users" :key="idx" class="grid-content card" onSlideChangeEnd="onSwipe">
             <div class="img-container">
               <img :src="user.photos && user.photos[0]">
             </div>
             <div class="user-details">
               <h4>{{ user.name }}, {{ user.age }}</h4>
-              <p> {{ user.description }} </p>
+              <!--<p> {{ user.description }} </p>-->
             </div>
           </swiper-slide>
         </swiper>
       </md-card-media>
     </md-card>
   
-    <section class="actions">
+    <section class="actions" v-if="!newMatch">
       <a href="#" @click.prevent="userDislike">
         <md-icon class="material-icons md-size-2x dislike">highlight_off</md-icon>
       </a>
@@ -24,7 +24,16 @@
         <md-icon class="material-icons md-size-2x like heart">favorite</md-icon>
       </a>
     </section>
-    </md-dialog-alert>
+     <div v-if="newMatch" class="match-popup">
+      <h1>Congratulations! </h1><h1> You have a NEW MATCH! </h1>
+      <img class="popup-image" :src="this.newMatch.photos[0]"></img>
+      <h2>You and {{this.newMatch.name}} like each other</h2>
+      <div class="popup-buttons">
+        <el-button class="button" @click="closePopup">CLOSE</el-button>
+        <el-button class="button" @click="viewMatches">View Matches</el-button>
+      </div>
+    </div>
+  
   </div>
 </template>
 
@@ -45,7 +54,7 @@ export default {
       msg: 'Browse screen',
       newMatchFlag: false,
       currentId: 'TBD - need to grab ID from click',
-      currentUserIdx: 0,
+      userIdx: 0,
       swiperOption: {
         effect: 'coverflow',
         grabCursor: true,
@@ -54,14 +63,13 @@ export default {
         loop: true,
         coverflow: {
           rotate: 100,
-          stretch: 0,
+          stretch: 20,
           depth: 100,
           modifier: 1,
           slideShadows: false
         },
         onTransitionStart: (swiper) => {
-          console.log(swiper.realIndex)
-          this.currentUserIdx = swiper.realIndex;
+          this.userIdx = swiper.realIndex;
         },
       },
     }
@@ -69,7 +77,8 @@ export default {
   created() {
     this.$store.dispatch({ type: GET_BROWSED });
     console.log('browse: created - after GET_BROWSED');
-
+      this.$router.push('Browse')
+    
   },
   computed: {
     users() {
@@ -77,8 +86,8 @@ export default {
       console.log('browse: computed - users:', users11);
       return users11;
     },
-    currentUser() {
-      return this.users[this.currentUserIdx];
+    user() {
+      return this.users[this.userIdx];
     },
     newMatch() {
       return this.newMatchFlag && this.$store.getters.fetchLastMatch;
@@ -98,19 +107,19 @@ export default {
       this.$router.push('Edit')
     },
     userDislike() {
-      console.log('Browse: before DISLIKE! id:', this.currentUser.id, this.currentUserIdx, this.users.length)
-      const msg = { id1: this.$store.state.user.currUser.id, id2: this.currentUser.id, bul: false }
+      console.log('Browse: before DISLIKE! id:', this.user.id, this.userIdx, this.users.length)
+      const msg = { id1: this.$store.state.user.currUser.id, id2: this.user.id, bul: false }
       this.$store.dispatch({ type: LIKE, data: msg })
-      this.currentUserIdx = (this.users.length - 1 === this.currentUserIdx) ? 0 : this.currentUserIdx + 1;
-      this.$refs.mySwiper.swiper.slideTo(this.currentUserIdx + 1);
+      this.userIdx = (this.users.length - 1 === this.userIdx) ? 0 : this.userIdx + 1;
+      this.$refs.mySwiper.swiper.slideTo(this.userIdx + 1);
     },
     userLike() {
       this.newMatchFlag = true;
       console.log('Browse: BEFORE LIKE state:', this.$store.getters.fetchLastMatch)
-      const msg = { id1: this.$store.state.user.currUser.id, id2: this.currentUser.id, bul: true }
+      const msg = { id1: this.$store.state.user.currUser.id, id2: this.user.id, bul: true }
       this.$store.dispatch({ type: LIKE, data: msg })
-      this.currentUserIdx = (this.users.length - 1 === this.currentUserIdx) ? 0 : this.currentUserIdx + 1;
-      this.$refs.mySwiper.swiper.slideTo(this.currentUserIdx + 1);
+      this.userIdx = (this.users.length - 1 === this.userIdx) ? 0 : this.userIdx + 1;
+      this.$refs.mySwiper.swiper.slideTo(this.userIdx + 1);
     },
     viewMatches() {
       console.log('Browse: clicked on "VEIW MATCHES"')
@@ -124,12 +133,11 @@ export default {
 
   }
 }
-
-
-
 </script>
 
 <style scoped lang="scss">
+@import url('https://fonts.googleapis.com/css?family=Kurale');
+
 .swiper-container {
   width: 25em!important;
   max-height: 100%;
@@ -138,24 +146,25 @@ export default {
 
 .card {
   background-color: rgba(250, 230, 230, 0.9);
-  border: 1px solid lightgrey;
+  overflow: hidden;
   .user-details>p {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: clip ellipsis;
   }
 }
+
 .actions {
   padding: {
-    top: 1em;
-    left: 3em;
-    right: 3em;
+    top: 3em;
+    left: 2em;
+    right: 2em;
     bottom: 1em;
   }
   display: flex;
   justify-content: space-between;
   flex-wrap:wrap;
-  box-shadow: 0 0 10px 1px rgba(0, 0, 0, 0.35) inset;
+  // box-shadow: 0 0 10px 1px rgba(0, 0, 0, 0.35) inset;
   .like {
     color: red;
     opacity: 0.9;
@@ -193,14 +202,32 @@ export default {
   }
 }
 
-.heart {
- cursor: pointer;
- height: 50px;
- width: 50px;
- background-image:url('https://abs.twimg.com/a/1446542199/img/t1/web_heart_animation.png');
- background-position: left;
- background-repeat:no-repeat;
- background-size:2900%;
+.match-popup {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  line-height: 3em;
+  color: white;
+  text-shadow: -1px -1px 2px rgba(89, 89, 89, 0.66);
+  // background-color: lightseagreen;
+  display:flex;
+  flex-direction:column;
+  justify-content: space-around;
+  align-items: center;
 }
+
+.popup-image {
+  max-width: 15em;
+  max-height: 15em;;
+}
+
+.popup-buttons{
+    width: 100%;
+  .button {
+    font-family: 'Kurale', Helvetica, Arial, sans-serif;
+    text-transform: uppercase;    
+    margin-bottom: 1.5em;
+  }
+  }
 
 </style>

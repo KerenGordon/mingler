@@ -5,25 +5,23 @@
           <router-link to="/edit" class="edit-btn">
             <img src="../assets/settings.png"> </router-link>
            <div>{{this.currUser.name}}</div>
-            
       </el-col>
       <el-col class="grid-content " :lg="{span: 6, offset: 6}" :md="{span: 6, offset: 6}" :sm="{span: 6, offset: 6}" :xs="{span: 8, offset: 5}">
           <router-link to="/browse">        
           <h2 class="logo">
             Mingler
-            <!--<img src="../assets/mingler.png">-->
           </h2>
           </router-link>
       </el-col>
       <el-col class="grid-content match-btn" :lg="{span: 2, offset: 6}" :md="{span: 2, offset: 6}" :sm="{span: 2, offset: 6}" :xs="{span: 2, offset: 5}">
-        <div v-if="isBrowseScreen" @click="navigate">
+        <div @click="navigate">
           <router-link to="/matches">
             <img src="../assets/matched.png"> </router-link>
         </div>
-        <div v-else @click="navigate" class="nav-back">
-          <router-link to="/browse">          
-            <h2 class="logo">back</h2></router-link>
-          </div>
+        <!--<div v-else @click="navigate" class="nav-back">-->
+          <!--<router-link to="/browse">          -->
+            <!--<h2 class="logo">back</h2></router-link>-->
+          <!--</div>-->
       </el-col>
   
     </el-row>
@@ -36,12 +34,19 @@ export default {
   data() {
     return {
       msg: 'Browse screen',
-      isBrowseScreen: true,
     //  currUser:  this.$store.state.user.currUser
     }
   },
+  // watch: {
+  //   '$route': function(window) {
+  //     console.log('MainNav-watch: in ' , window, 'screen')
+  //   }
+  // },
   computed: {
-currUser() {return this.$store.state.user.currUser } 
+    isBrowseScreen(){
+     return ( this.$route.name === "Browse" )
+    },
+    currUser() {return this.$store.state.user.currUser } 
 
   },
   methods: {
@@ -58,14 +63,14 @@ currUser() {return this.$store.state.user.currUser }
 .edit-btn img {
   width: 3em;
   margin: {
-    top: 1.5em;
+    top: 0.5em;
   }
 }
 
 .match-btn img {
-  width: 3em;
+  width: 4em;
   margin: {
-    top: 1.5em;
+    top: 1em;
   }
 }
 

@@ -3,7 +3,7 @@
   v-if="users" class="users-match-screen">
     <div md-gutter class="phone-viewport users-list" id="users-list">
       <md-list class="custom-list md-double-line" v-for="user in users" :key="user.id" @click="openChat(user.id)">
-        <md-list-item class="user-photo">
+        <md-list-item class="user-photo single-match">
           <md-avatar>
             <img v-if="user.photos" class="matchImg" :src="user.photos[0]">
           </md-avatar>
@@ -18,11 +18,14 @@
             <md-button class="md-icon-button md-list-action" @click="userDislike(user.id)">
               <md-icon class="material-icons">highlight_off</md-icon>
             </md-button>
+          <!--<md-divider/>-->
           </div>
-          <md-divider class="md-inset"></md-divider>
         </md-list-item>
       </md-list>
     </div >
+    <div v-if="users.length === 0" class="no-match">
+      <h2> You have no matches (yet)! </h2>
+    </div>
   </md-layout>
 </template>
 
@@ -53,9 +56,6 @@ export default {
 
   },
  computed: {
-    // currentUser() {
-    //   return this.users[this.currentUserIdx];
-    // },
       users() {
       var users11 =  this.$store.getters.fetchUsersMatched;
       console.log('Matched: computed - users:', this.users11);
@@ -98,13 +98,17 @@ a:hover {
   transition: all 0.3s ease-in-out;
 }
 
-.users-match-screen {
-
-  box-shadow: 0 0 30px 10px rgba(220,220,220,0.6);
+.users-list {
+  border: {
+    left: 2px solid lightgrey;
+    right: 2px solid lightgrey;
+  };
   background-color: rgba(239, 237, 234, 0.2);
-  display: flex;
-  width: 60%;
+  width: 100%;
   margin: auto;
+  .no-match {
+    border: none;
+  };
 }
 .md-list-text-container span {
   font-size: 1.3em;
