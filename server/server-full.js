@@ -353,13 +353,13 @@ app.post('/users/addUser', upload.single('file'), function (req, res) {
 	//console.log('req.file', req.file);
 	var user;
 	console.log('ADD USER: ** req.body.DATA **', req.body.data);
-	if (req.body.data.id) {
-		console.log('ADD USER: USER exist (ID) - only update existing user)')
-		user = req.body.data;
-		var idx = getUserIdxById(user.id);
-		splice(idx, 1, user);
-	}
-	else {
+	// if (req.body.data.id) {
+	// 	console.log('ADD USER: USER exist (ID) - only update existing user)')
+	// 	user = req.body.data;
+	// 	var idx = getUserIdxById(user.id);
+	// 	splice(idx, 1, user);
+	// }
+	// else {
 		console.log('ADD USER: NEW USER  (NO ID) - create new user)')
 		var userId = getUniqueId();
 		var photos = [];
@@ -370,7 +370,7 @@ app.post('/users/addUser', upload.single('file'), function (req, res) {
 		console.log('ADD USER: new created user:', user)
 		users.push(user)
 		cl("ADD USER: user added", user);
-	}
+	// }
 	res.json(user);
 });
 //====================================================================================
