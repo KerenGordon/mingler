@@ -344,7 +344,10 @@ app.post('/users/addUser', upload.single('file'), function (req, res) {
 	//console.log('req.file', req.file);
 	 console.log('ADD USER: req.body', req.body.data);
 var userId = getUniqueId();
-var templateUser = { id:userId, likes: {}, dislikes: {}, matches: {}, lastLine: "whatsapp??", photos: []}
+var photos=[];
+photos.push(`https://thechive.files.wordpress.com/2012/01/beautiful-women-${Math.floor(Math.random()*36)}.jpg`)
+	 console.log('*******ADD USER: image address', photos);
+var templateUser = { id:userId, likes: {}, dislikes: {}, matches: {}, lastLine: "whatsapp??", photos: photos}
 var user = Object.assign(req.body.data,templateUser);
 console.log('ADD USER: new created user:',user)
 users.push(user)
