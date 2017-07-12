@@ -123,8 +123,14 @@ export default {
     this.newMsg = {};
     this.onlineUsers = msgService.getOnlineUsers();
     this.initUser();
+    this.getMyHistory() ;
+
   },
   computed:{
+      // msgs() {
+      //     console.log('chat.computed.msgs:');
+      //   return msgService.getMsgs();
+      // },
       currUser() {
           return this.$store.getters.fetchCurrUser;
       },
@@ -132,11 +138,6 @@ export default {
           var msg = this.createEmptyMsg();
           return msg;
       },
-      // msgs() {
-      //     var msgs1 = msgService.getMsgs();
-      //     // console.log('chat.computed.msgs:', msgs1);
-      //     return msgService.getMsgs();
-      // },
       chatUser() {
           //console.log('oooooooooooooooooooooochat.computed.chatUser:', this.$store.getters.fetchChatUser.id);
           return this.$store.getters.fetchChatUser
@@ -148,10 +149,15 @@ export default {
   },
   methods: {
     createEmptyMsg() {
-    // debugger;
-      // console.log('chat createEmpty:', '/',this.chatUser.id);
       return {txt: '', processed: false, from: this.currUser.id,fromName:this.currUser.name, 
                   to:this.chatUser.id ,toName:this.chatUser.name, type1: 'sendMsgToUser'};
+    },
+ //===========================
+    getMyHistory() {
+        var msg = {userId:this.currUser.id,type1:'getMyHistory'}
+        console.log('Chat.getMyHistory:', msg);
+        msgService.send(msg);
+
     },
  //===========================
     msgClass(msg) { 
@@ -167,16 +173,15 @@ export default {
     },
 
     typing() {
-
       var obj = {txt: '', processed: false, from: this.currUser.id,fromName:this.currUser.name, 
                   to:this.chatUser.id ,toName:this.chatUser.name, type1: 'typing'};
       console.log('typing:' ,obj);
-      // msgService.send(obj);
+      msgService.send(obj);
     },
  //==========================
     initUser() {
       var msg = {user:this.currUser.id , chatUser:this.chatUser.id,type1: 'initUser'};
-      console.log('chat send:', msg);
+      console.log('chat initUser:', msg);
       msgService.send(msg);
       this.newMsg = this.createEmptyMsg();
 

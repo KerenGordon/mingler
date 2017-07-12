@@ -534,21 +534,16 @@ io.on('connection', function (socket) {
 		console.log('chat.js/sendNewMsg.type1: ' + msg.type1);
 		switch (msg.type1) {
 			case 'sendMsgToUser':
-				var from = msg.from;
-				var to    = msg.to;
-				var user1 = getUserById(from);
-				var user2 = getUserById(to);
-				msg.tttttt=1;
 				msgs.push(msg);
-				sendAll('msg received', msg)
-				
-				// if(user1.socket) sendAll("msg sent", msg) io.sockets.sockets[user1.socket].emit(msg);
-				// if(user2.socket) sendAll("msg rcvd", msg) io.sockets.sockets[user2.socket].emit(msg);
-					console.log('**************chat.js/sendMsgToUser: ', msg.from,'/',msg.to);
-				
+				sendMsgToUser(msg.from,msg)
+				sendMsgToUser(msg.to,msg)
 				break;
 			case 'typing':
 					console.log('chat.js/typing: ' );
+			break;
+			case 'getMyHistory':
+					console.log('chat.js/getMyHistory: ' );
+					getMyHistory(msg);
 			break;
 			case 'sendMsgToAll':
 					console.log('chat.js/sendMsgToAll: ' + msg);
@@ -572,13 +567,38 @@ io.on('connection', function (socket) {
 });
 
 //====================================================================================
+function getMyHistory(msg) {
+	
+	var user = getUserById(msg.userId);
+	console.log('*******chat/getMyHistory/msg:',msg);
+	console.log('*******chat/getMyHistory/msgs:',msgs.length);
+
+	var userMsgs = msgs.filter(function(msg){
+		console.log('*******chat/getMyHistory/msg.from:',msg.from,'msg.userId/', user.id);
+		return (msg.from ==user.id);
+	});
+	console.log('*******chat/getMyHistory/userMsgs:',userMsgs);
+	var jsonMsg = JSON.stringify(userMsgs)
+	if(user.socket) {
+		io.to(user.socket).emit("msg received", jsonMsg);
+	}
+}
+//====================================================================================
+function sendMsgToUser(userId,msg) {
+	var user = getUserById(userId);
+	var jsonMsg = JSON.stringify(msg)
+	console.log('*******chat/sendMsgToUser',user.socket);
+	if(user.socket) {
+		io.to(user.socket).emit("msg received", jsonMsg);
+	}
+}
+//====================================================================================
 function getUserById(id) {
 	var objUser = users.find(function (user) {
 		return (id === user.id)
 	})
 	return objUser
 }
-
 //====================================================================================
 function getUserIdxById(id) {
 	return	users.findIndex(user =>user.id === id);

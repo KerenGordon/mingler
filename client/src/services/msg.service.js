@@ -21,12 +21,18 @@ console.log('socket!!!!!!-', socket);
 socket.on('msg received', function (strMsg) {
     var msg = JSON.parse(strMsg);
     
-        console.log('msg.service.socket.on-', msg);
+        console.log('msg.service.msg received-', msg);
         msgs.push(msg);
         console.log('msg.service.socket.on. msgs.length-', msgs[msgs.length-1]);
-        // if(msg.type1 == 'typing') deleteTypingMsg(msg)
+        // if(msg.type1 == 'typing') deleteTypingMsg(msg)//
+        if(msg.type1 == 'getMyHistory')pushToMsgs(msgs)
     msg.atFormated= moment(msg.at).format('HH:mm');
 });
+//==============================================
+function pushToMsgs(msgs){
+      console.log('msg.service.pushToMsgs. msgs.length-', msgs.length);
+      msgs.push(msg);
+}
 //==============================================
 function deleteTypingMsg(msg){
     setTimeout(()=>{
@@ -51,7 +57,8 @@ const getOnlineUsers = () =>{
  const send = (msg) => {
     console.log('msg.service.send:, type1:', msg.type1)
     //msg.type = 'msg';
-    //if(msg.type1 !== 'typing' ) msgs.push(msg);
+    // if(msg.type1 !== 'typing' ) msgs.push(msg);
+
     console.log('msg',msgs)
     socket.emit('sendMsg', JSON.stringify(msg));
  }
