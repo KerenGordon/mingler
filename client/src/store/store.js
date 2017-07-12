@@ -77,7 +77,10 @@ const getters = {
     console.log('store.getters. Current User', state.currUser)
     return state.currUser;
   },
-
+fetchChatUser(state) {
+    console.log('store.getters. chat User', state.chatUser)
+    return state.chatUser;
+  },
  fetchLoginStatus(state) {
     console.log('store.getters. LOGIN STATUS', state.loginStatus)
     return state.loginStatus;
