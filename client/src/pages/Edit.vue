@@ -1,4 +1,6 @@
 <template>
+<!--TODO - REQUIRED FIELDS-->
+
   <section class="user-zone">
     <div v-if="currUser" class="edit-header">
       <h2 >Edit your profile</h2>
@@ -6,7 +8,7 @@
     </div>
       <div v-else class="edit-header">
     <h2 >Create your new account</h2>
-    <el-button size="mini"  @click.stop="logoutUser">already have an account? Login</el-button>
+    <el-button size="mini"  @click.stop="logoutUser">Have an account? Login</el-button>
     </div>
    
     <el-form class="form" label-position="top">
@@ -15,7 +17,7 @@
           <el-input v-model="user.name" class="input" placeholder="Your Name"></el-input>
         </el-col>
         <el-col :span="11" :offset=2 :xs="{span:24, offset:0}">
-          <el-date-picker type="date" placeholder="Date of birth" v-model="user.birth"
+          <el-date-picker type="text" placeholder="Year of birth" v-model="user.birth"
            style="width: 100%;"></el-date-picker>
         </el-col>
       </el-form-item>
@@ -36,12 +38,7 @@
             <el-radio label="Female" value="f"></el-radio>
           </el-radio-group>
         </el-form-item>
-  
-        <!--<el-form-item label="Upload picture">
-          <el-upload class="upload-demo" :on-preview="handlePreview" :on-remove="handleRemove" :file-list="user.photo">
-            <el-button size="small" type="accent">Click to upload</el-button>
-          </el-upload>
-        </el-form-item>-->
+
       </section>
   
       <el-form-item label="Tell us about yourself...">
@@ -52,20 +49,6 @@
         <el-button @click="moveToBrowse">Cancel</el-button>
       </el-form-item>
     </el-form>
-    <!--
-    <div class="form-user">
-      <input type="text" placeholder="Your Name" v-model="user.name">
-      <input type="text" placeholder="Your Birth (dd/mm/yyy)" v-model="user.birth">
-      <input type="text" placeholder="gender (m/f)" v-model="user.gender">
-      <input type="text area" placeholder="Free text about yourself" v-model="user.description">
-      <input type="text " placeholder="link to your photo" v-model="user.photo">
-      <img :src=user.photo class="user-photo"> 
-      <input type="login " placeholder="login" v-model="user.login">
-      <input type="password " placeholder="password" v-model="user.password">
-      <el-button @click="submitForm"> SUBMIT </el-button>
-      <el-button @click="moveToBrowse"> CANCEL </el-button>
-    </div>
-    -->
   </section>
 </template>
 

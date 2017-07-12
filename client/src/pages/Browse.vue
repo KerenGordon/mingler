@@ -9,7 +9,21 @@
             </div>
             <div class="user-details">
               <h4>{{ user.name }}, {{ user.age }}</h4>
-              <!--<p> {{ user.description }} </p>-->
+            </div>
+            <div class="description" v-show="expand">
+              <h4>{{ user.name }}, {{ newDate - user.birth }}</h4>
+              <!--<p> Lorem ipsum dolor sit amet, consectetur adipisicing elit. Optio itaque ea, nostrum odio. Dolores, sed accusantium quasi non, voluptas eius illo quas, saepe voluptate pariatur in deleniti minus sint. Excepturi. </p>-->
+              <p> {{user.description}}
+              <div class="expand">
+                <p @click="expand = !expand">
+                  <md-icon>keyboard_arrow_down</md-icon>
+                </p>
+              </div>
+            </div>
+            <div class="expand">
+              <p @click="expand = !expand">
+                <md-icon>keyboard_arrow_up</md-icon>
+              </p>
             </div>
           </swiper-slide>
         </swiper>
@@ -52,7 +66,9 @@ export default {
   data() {
     return {
       msg: 'Browse screen',
+      expand: false,
       newMatchFlag: false,
+      newDate: 2017,
       currentId: 'TBD - need to grab ID from click',
       userIdx: 0,
       swiperOption: {
@@ -70,6 +86,7 @@ export default {
         },
         onTransitionStart: (swiper) => {
           this.userIdx = swiper.realIndex;
+          if (this.expand) this.expand = false;
         },
       },
     }
@@ -136,10 +153,9 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import url('https://fonts.googleapis.com/css?family=Kurale');
 
 .swiper-container {
-  width: 25em!important;
+  width: 22em!important;
   max-height: 100%;
   margin: auto;
 }
@@ -156,7 +172,7 @@ export default {
 
 .actions {
   padding: {
-    top: 3em;
+    top: 0.5em;
     left: 2em;
     right: 2em;
     bottom: 1em;
@@ -164,7 +180,7 @@ export default {
   display: flex;
   justify-content: space-between;
   flex-wrap:wrap;
-  // box-shadow: 0 0 10px 1px rgba(0, 0, 0, 0.35) inset;
+  background: lightgrey;
   .like {
     color: red;
     opacity: 0.9;
@@ -229,5 +245,16 @@ export default {
     margin-bottom: 1.5em;
   }
   }
+  .description {
+  background: rgba(252, 217, 217, 1);
+  position: absolute;
+  display: block;
+  width: 100%;
+  bottom: 0;
+  }
+  .expand {
+    cursor: pointer;
+  }
+
 
 </style>

@@ -4,7 +4,7 @@
       <el-col class="grid-content " :lg="{span: 2, offset: 1}" :md="{span: 2, offset: 1}" :sm="{span: 2, offset: 1}" :xs="{span: 2, offset: 1}">
           <router-link to="/edit" class="edit-btn">
             <img src="../assets/settings.png"> </router-link>
-           <div>{{this.currUser.name}}</div>
+           <div class="registered-user">{{this.currUser.name}}</div>
       </el-col>
       <el-col class="grid-content " :lg="{span: 6, offset: 6}" :md="{span: 6, offset: 6}" :sm="{span: 6, offset: 6}" :xs="{span: 8, offset: 5}">
           <router-link to="/browse">        
@@ -14,14 +14,16 @@
           </router-link>
       </el-col>
       <el-col class="grid-content match-btn" :lg="{span: 2, offset: 6}" :md="{span: 2, offset: 6}" :sm="{span: 2, offset: 6}" :xs="{span: 2, offset: 5}">
-        <div @click="navigate">
-          <router-link to="/matches">
-            <img src="../assets/matched.png"> </router-link>
+        <div v-if="!isBrowseScreen" @click="navigate">
+          <router-link to="/browse">
+            <img src="../assets/browse.png"> 
+            
+            </router-link>
         </div>
-        <!--<div v-else @click="navigate" class="nav-back">-->
-          <!--<router-link to="/browse">          -->
-            <!--<h2 class="logo">back</h2></router-link>-->
-          <!--</div>-->
+        <div v-else @click="navigate" class="nav-back">
+          <router-link to="/matches">          
+            <img src="../assets/matched.png"> </router-link>
+          </div>
       </el-col>
   
     </el-row>
@@ -63,14 +65,14 @@ export default {
 .edit-btn img {
   width: 3em;
   margin: {
-    top: 0.5em;
+    top: 1.5em;
   }
 }
 
 .match-btn img {
-  width: 4em;
+  width: 3em;
   margin: {
-    top: 1em;
+    top: 1.5em;
   }
 }
 
