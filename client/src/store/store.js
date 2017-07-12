@@ -53,14 +53,19 @@ const state = {
   ],
 
   currUser: {
-    // id: 1, name: 'lora', gender: 'f', description: 'like to love',
-    // userName: '111', password: '111', likes: { '1': true, '2': false }, dislikes: [11], matches: [],
-    // lastLine: "whatsapp??", photos: ['http://dreamatico.com/data_images/woman/woman-1.jpg']
+    id: 1, name: 'lora', gender: 'f', description: 'like to love',
+    userName: '111', password: '111', likes: { '1': true, '2': false }, dislikes: [11], matches: [],
+    lastLine: "whatsapp??", photos: ['http://dreamatico.com/data_images/woman/woman-1.jpg']
   },
   // currUser: {},
   user2: null,
   lastMatch: {},
-  chatUser: {},
+  chatUser: {
+    			id: 2, name: 'chen', gender: 'f', birth: '1991', description: 'love to love',
+			userName: '222', password: '222', likes: {}, dislikes: { '45': false }, matches: {},
+			lastLine: "hola??", photos: ['http://dreamatico.com/data_images/woman/woman-2.jpg']
+
+  },
   loginStatus: true
 
 };

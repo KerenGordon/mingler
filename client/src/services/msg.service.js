@@ -20,18 +20,21 @@ console.log('socket!!!!!!-', socket);
 //==============================================
 socket.on('msg received', function (strMsg) {
     var msg = JSON.parse(strMsg);
-    
-        console.log('msg.service.msg received-', msg);
-        msgs.push(msg);
-        console.log('msg.service.socket.on. msgs.length-', msgs[msgs.length-1]);
-        // if(msg.type1 == 'typing') deleteTypingMsg(msg)//
-        if(msg.type1 == 'getMyHistory')pushToMsgs(msgs)
     msg.atFormated= moment(msg.at).format('HH:mm');
+      switch (msg.type1) {
+        case 'getOurHistory':
+            pushToMsgs(msg)
+        break;
+        case 'sendMsgToUser':
+            msgs.push(msg)
+        break;
+      }
+
 });
 //==============================================
-function pushToMsgs(msgs){
+function pushToMsgs(msg){
       console.log('msg.service.pushToMsgs. msgs.length-', msgs.length);
-      msgs.push(msg);
+      msgs.concat(msg.msgs);
 }
 //==============================================
 function deleteTypingMsg(msg){

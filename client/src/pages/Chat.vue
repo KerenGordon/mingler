@@ -1,6 +1,5 @@
 <template>
   <section>
-     oooooooooooooo<button @click.prevent="moveToBrowse" >close!!!!!!!!!!1</button>
     <div class="page" v-if="currUser">
       <div class="marvel-device nexus5">
         <div class="top-bar"></div>
@@ -37,16 +36,15 @@
                       <span>chat {{this.$store.state.user.chatUser.id}}-{{this.$store.state.user.chatUser.name}}</span>
                       <span class="status">online</span>
                   </div>
-                  <div  v-if="currUser" class="avatar">
-                      <img :src="currUser.photos[0]" />
-                           {{msgs.length}}
-                           <button @click.prevent="moveToBrowse" >close!!!!!!!!!!1</button>
-
-                  </div>
-                  <div class="name">
-                    <span>me {{this.$store.state.user.currUser.id}}-{{this.$store.state.user.currUser.name}}</span>
-                    <span class="status">online</span>
-                  </div>
+                    <!--<div class="userMe">-->
+                      <!--<div  v-if="currUser" class="avatar">
+                          <img :src="currUser.photos[0]" />
+                      </div>
+                      <div class="name">
+                        <span> {{this.$store.state.user.currUser.id}}-{{this.$store.state.user.currUser.name}}</span>
+                        <span class="status">online</span>
+                      </div>-->
+                    <!--</div>-->
                   <div class="actions more">
                     <i class="zmdi zmdi-more-vert"></i>
                   </div>
@@ -54,14 +52,16 @@
                     <i class="zmdi zmdi-attachment-alt"></i>
                   </div>
                   <div class="actions">
+                  <button class="btn-go-home" @click.prevent="moveToBrowse" >Back</button>
                     <i class="zmdi zmdi-phone"></i>
                   </div>
                 </div>
                 <div class="conversation">
                   <div class="conversation-container">
 
-                    <div v-for="msg in msgs" class="message" :class="msgClass(msg)">
+                    <div  v-for="msg in msgs" class="message" :class="msgClass(msg)">
                       <div class = " msg-from" >{{msg.fromName}}</div>
+                      <!--<div v-if="msg.status" class = " msg-txt" >status: {{msg.status}}</div>-->
                       <div class = " msg-txt" >{{msg.txt}}</div>
                       <span class="metadata">
                         <span class="time">{{msg.atFormated}}</span>
@@ -107,6 +107,8 @@
 <script>
 import msgService from '../services/msg.service';
 import moment from "moment";
+// import $ from "jquery";
+
 export default {
   name: 'chat',
   data() {
@@ -120,23 +122,23 @@ export default {
   },
   created() {
     this.msgs = msgService.getMsgs();
-    this.newMsg = {};
+    this.newMsg = this.createEmptyMsg();
     this.onlineUsers = msgService.getOnlineUsers();
     this.initUser();
-    this.getMyHistory() ;
+    this.getOurHistory() ;
+    this.currUser = this.$store.getters.fetchCurrUser;
+    this.chatUser = this.$store.getters.fetchChatUser;
 
   },
   computed:{
       // msgs() {
       //     console.log('chat.computed.msgs:');
-      //   return msgService.getMsgs();
+      //     var msgs = msgService.getMsgs();
+      //     msgs = msgs.filter((msg)=>{return (msg.from== this.currUser)&&(msg.to== this.chatUser)})
+      //   return msgs;
       // },
       currUser() {
           return this.$store.getters.fetchCurrUser;
-      },
-      newMsg() {
-          var msg = this.createEmptyMsg();
-          return msg;
       },
       chatUser() {
           //console.log('oooooooooooooooooooooochat.computed.chatUser:', this.$store.getters.fetchChatUser.id);
@@ -144,20 +146,23 @@ export default {
       }
   },
    beforeDestroy() {
-      console.log('chat, close socket')
+      // console.log('chat, close socket')
       // msgService.closeSocket();
   },
   methods: {
     createEmptyMsg() {
+        // console.log('Chat.createEmptyMsg, txt:');
       return {txt: '', processed: false, from: this.currUser.id,fromName:this.currUser.name, 
                   to:this.chatUser.id ,toName:this.chatUser.name, type1: 'sendMsgToUser'};
     },
  //===========================
-    getMyHistory() {
-        var msg = {userId:this.currUser.id,type1:'getMyHistory'}
-        console.log('Chat.getMyHistory:', msg);
+    getOurHistory() {
+       
+        var msg = Object.assign({}, this.newMsg);
+        msg.type1 = 'getOurHistory';
+        // console.log('Chat.getOurHistory:', msg);
         msgService.send(msg);
-
+        this.newMsg = this.createEmptyMsg();
     },
  //===========================
     msgClass(msg) { 
@@ -168,20 +173,20 @@ export default {
     },
  //========================== 
     moveToBrowse() {
-      console.log('Chat: move to browse ')
+      // console.log('Chat: move to browse ')
       this.$router.push('Browse')
     },
 
     typing() {
       var obj = {txt: '', processed: false, from: this.currUser.id,fromName:this.currUser.name, 
                   to:this.chatUser.id ,toName:this.chatUser.name, type1: 'typing'};
-      console.log('typing:' ,obj);
+      // console.log('typing:' ,obj);
       msgService.send(obj);
     },
  //==========================
     initUser() {
       var msg = {user:this.currUser.id , chatUser:this.chatUser.id,type1: 'initUser'};
-      console.log('chat initUser:', msg);
+      // console.log('chat initUser:', msg);
       msgService.send(msg);
       this.newMsg = this.createEmptyMsg();
 
@@ -226,7 +231,20 @@ body {
   padding: 0;
   height: 100%;
 }
+img{
+  height:100%;
+}
+.btn-go-home{
+  margin-right:40px;
+  border-radius: 7px;
+  height: 2em;
+  /*border:1px solid green;*/
+}
+.btn-go-home:hover{
+  cursor: pointer;
+    border:1px solid blue;
 
+}
 .page {
   width: 100%;
   height: 100%;
@@ -335,6 +353,7 @@ body {
 }
 
 .user-bar .name {
+  
   font-size: 17px;
   font-weight: 600;
   text-overflow: ellipsis;
@@ -630,7 +649,7 @@ body {
   .marvel-device .status-bar {
     display: none;
   }
-
+  .userMe{}
   .screen-container {
     position: absolute;
     top: 0;

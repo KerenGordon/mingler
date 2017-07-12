@@ -106,11 +106,11 @@ app.get('/data/:objType/:filter/:id', function (req, res) {
 	}
 	else {
 		filteredUsers = users.filter(function (user) {//all that is not match
-			console.log('Get filters', user, user.matches)
+			console.log('Get filters', user.id, user.matches.length)
 			return !(user.matches[objId] === true);
 		});
 	}
-	console.log('Get USERS FILTERED: filtered users:', filteredUsers)
+	console.log('Get USERS FILTERED: filtered users:', filteredUsers.length)
 	res.json(filteredUsers);
 });
 
@@ -504,12 +504,12 @@ app.get('/', function (req, res) {
 io.on('connection', function (socket) {
 	//====================
 	socket.on('disconnect', function (ev) {
-		console.log('user disconnected, socket.id=', socket.id);
+		// console.log('user disconnected, socket.id=', socket.id);
 		//	console.log('users ', users);
 		if (users.length > 0) {
 			var id = socket.id;
 			var idx = users.findIndex(function (user, idx) {
-				console.log('***user ', user, ' socket id = ', id);
+				// console.log('***user ', user.id , ' socket id = ', id);
 				return user.socketId == id
 				// return idx ;
 			});
@@ -519,7 +519,7 @@ io.on('connection', function (socket) {
 			var txt = " user as left the building"
 			var obj = { txt: txt, processed: true, from: "server", type1: "user disconnected" }
 			if (idx >= 0) {
-				console.log('splicing user:', users[idx].nickName)
+				// console.log('splicing user:', users[idx].nickName)
 				users.splice(idx, 1);
 				sendAll('msg received', obj);
 			}
@@ -528,34 +528,35 @@ io.on('connection', function (socket) {
 	//====================
 	socket.on('sendMsg', function (msg) {
 		// console.log('chat.js/sendMsg: ' + msg);
-
 		msg = JSON.parse(msg);
+		updateSocket(msg,socket);
 		msg.processed = true;
-		console.log('chat.js/sendNewMsg.type1: ' + msg.type1);
+		// console.log('chat.js/sendNewMsg.type1: ' + msg.type1);
 		switch (msg.type1) {
 			case 'sendMsgToUser':
 				msgs.push(msg);
 				sendMsgToUser(msg.from,msg)
-				sendMsgToUser(msg.to,msg)
+				// if( msg.from !=msg.to)
+					sendMsgToUser(msg.to,msg)
 				break;
 			case 'typing':
-					console.log('chat.js/typing: ' );
+					// console.log('chat.js/typing: ' );
 			break;
-			case 'getMyHistory':
-					console.log('chat.js/getMyHistory: ' );
-					getMyHistory(msg);
+			case 'getOurHistory':
+					// console.log('chat.js/getOurHistory: ' );
+					getOurHistory(msg);
 			break;
 			case 'sendMsgToAll':
-					console.log('chat.js/sendMsgToAll: ' + msg);
+					// console.log('chat.js/sendMsgToAll: ' + msg);
 				sendAll('msg received', msg);
 				break;
 			case 'typing':
-					console.log('chat.js/typing: ' + msg);
+					// console.log('chat.js/typing: ' + msg);
 				msg.txt = ' is typing...'
 				sendAll('msg received', msg);s
 				break;
 			case 'initUser'://
-					console.log('******************8chat.js/initUser: ' + msg);
+					// console.log('******************8chat.js/initUser: ' + msg);
 				var idx = getUserIdxById(msg.user);	
 				var id = socket.id;
 				users[idx].socket = id;
@@ -567,27 +568,38 @@ io.on('connection', function (socket) {
 });
 
 //====================================================================================
-function getMyHistory(msg) {
-	
-	var user = getUserById(msg.userId);
-	console.log('*******chat/getMyHistory/msg:',msg);
-	console.log('*******chat/getMyHistory/msgs:',msgs.length);
+function updateSocket(msg,socket){
+	var userId = msg.from;
+	var userIdx = getUserIdxById(userId);
+	// console.log('chat/updatesocket to id ',userId, 'idx:',userIdx);
+	var userIdx = getUserIdxById(userId);
+	if (userIdx>-1){
+		users[userIdx].socket = socket.id;
+	}
+}
+//====================================================================================
 
+function getOurHistory(filter) {
+
+	// console.log('*******chat/getMyHistory/msg:',filter);
+	// console.log('*******chat/getMyHistory/msgs:',filter.length);
 	var userMsgs = msgs.filter(function(msg){
-		console.log('*******chat/getMyHistory/msg.from:',msg.from,'msg.userId/', user.id);
-		return (msg.from ==user.id);
+		// console.log('*******chat/getMyHistory/msg.from:',msg.from,'msg.userId/', user.id);
+		return((msg.from ==filter.from && msg.to ==filter.to )||(msg.from ==filter.to && msg.to ==filter.from ));
 	});
-	console.log('*******chat/getMyHistory/userMsgs:',userMsgs);
-	var jsonMsg = JSON.stringify(userMsgs)
-	if(user.socket) {
-		io.to(user.socket).emit("msg received", jsonMsg);
+	// console.log('*******chat/getMyHistory/userMsgs:',userMsgs.length);
+	filter.msgs = userMsgs;
+	var jsonMsg = JSON.stringify(filter);
+	if(filter.socket) {
+		io.to(filterm.socket).emit("msg received", jsonMsg);
 	}
 }
 //====================================================================================
 function sendMsgToUser(userId,msg) {
 	var user = getUserById(userId);
-	var jsonMsg = JSON.stringify(msg)
-	console.log('*******chat/sendMsgToUser',user.socket);
+	var jsonMsg = JSON.stringify(msg);
+	msg.status=3;
+	// console.log('*******chat/sendMsgToUser',user.socket);
 	if(user.socket) {
 		io.to(user.socket).emit("msg received", jsonMsg);
 	}
