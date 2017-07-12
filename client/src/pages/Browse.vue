@@ -119,6 +119,9 @@ export default {
     userLike() {
       this.newMatchFlag = true;
       console.log('Browse: BEFORE LIKE state:', this.$store.getters.fetchLastMatch)
+      console.log('Browse: currUser:', this.$store.state.user.currUser)
+
+      
       const msg = { id1: this.$store.state.user.currUser.id, id2: this.user.id, bul: true }
       this.$store.dispatch({ type: LIKE, data: msg })
       this.userIdx = (this.users.length - 1 === this.userIdx) ? 0 : this.userIdx + 1;
