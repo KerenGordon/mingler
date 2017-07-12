@@ -38,6 +38,7 @@ const addUser = msg => {
   return axios.post('http://localhost:3003/users/addUser', msg)
     .then(function (response) {
       console.log('service.addUser response:', response);
+      console.log('service.addUser response.data:', response.data);
       return response.data;
     })
 }

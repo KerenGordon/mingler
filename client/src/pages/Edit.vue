@@ -45,8 +45,9 @@
         <el-input type="textarea" v-model="user.description"></el-input>
       </el-form-item>
       <el-form-item>
-        <el-button type="md-accent" @click.stop="submitForm">Submit</el-button>
         <el-button @click="moveToBrowse">Cancel</el-button>
+        <el-button type="md-accent" @click.stop="submitForm">Submit</el-button>
+        <div v-if="loadingFlag" class="loading-gif"> <img  class="loading-image" src="../assets/loading.gif"></div>
       </el-form-item>
     </el-form>
   </section>
@@ -59,6 +60,7 @@ import { LOG_OUT } from '../store/store'
 export default {
   data() {
     return {
+      loadingFlag: false,
       //currUser:  this.$store.state.user.currUser,
       user: {
      //   id: '',
@@ -68,6 +70,7 @@ export default {
         description: '',
         photo: 'https://upload.wikimedia.org/wikipedia/commons/b/be/Orang_Utan%2C_Semenggok_Forest_Reserve%2C_Sarawak%2C_Borneo%2C_Malaysia.JPG',
         userName: '', // TBD replace all userName with login
+        // login: '', // TBD replace all userName with login
         password: '',
         email: ''
       }
@@ -101,7 +104,9 @@ export default {
   methods: {
     submitForm() {
       console.log('Edit: submit form: ', this.user)
-      this.$store.dispatch({ type: ADD_USER, data: this.user });
+      this.loadingFlag = true;
+      this.$store.dispatch({ type: ADD_USER, data: this.user })
+        this.loadingFlag = false  
     },
        moveToBrowse() {
       console.log('Edit: move to browse ')
@@ -125,8 +130,8 @@ export default {
   justify-content: space-between;
   width: 90%;
   margin: auto;
-
 }
+
 
 .el-button--mini {
     height: 2em;
@@ -169,4 +174,26 @@ a:hover {
   display: flex;
   justify-content: space-around;
 }
+
+.loading-gif{
+  z-index: 1000;
+   position: fixed;
+   margin: auto;
+  top:0;
+  left:0;
+   width: 100%;
+  height: 100%;
+  background-color: gray;
+  display: flex;
+  justify-content: center;
+  align-items:center;
+  opacity: 0.5;
+}
+
+.loading-image{
+width: 10%;
+
+}
+
+
 </style>

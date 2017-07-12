@@ -3,6 +3,12 @@
 // Plus support for file upload
 // Author: Yaron Biton misterBIT.co.il
 
+// content:
+// defs
+// demo server array
+// socket 
+// yaron - mongo and session
+
 "use strict";
 var users = [];
 var usersIdCount = 100;
@@ -24,11 +30,7 @@ var corsOptions = {
 
 const serverRoot = 'http://localhost:3003/';
 const baseUrl = serverRoot + 'data';
-
-
 app.use(express.static('uploads'));
-
-
 app.use(cors(corsOptions));
 app.use(bodyParser.json());
 app.use(clientSessions({
@@ -37,78 +39,44 @@ app.use(clientSessions({
 	duration: 30 * 60 * 1000,
 	activeDuration: 5 * 60 * 1000,
 }));
-
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
 
-restartUsers();
 cl('init server  - function - restartUsers: ', users.length)
+
+/////    utils
 
 function getUniqueId() {
 	usersIdCount++;
 	return usersIdCount;
+	// TBD - get reat unique id
 }
-//==============================================================================
-function dbConnect() {
 
-	return new Promise((resolve, reject) => {
-		// Connection URL
-		var url = 'mongodb://ilan:123@ds029665.mlab.com:29665/sprint4';
-		// Use connect method to connect to the Server
-		mongodb.MongoClient.connect(url, function (err, db) {
-			if (err) {
-				cl('Cannot connect to DB', err)
-				reject(err);
-			}
-			else {
-				//cl("Connected to DB");
-				resolve(db);
-			}
-		});
-	});
-}
-//======================================================================
-// GETs full list
-app.get('/data/:objType', function (req, res) {
-	console.log('GET FULL LIST - entered')
-	const objType = req.params.objType;
-	dbConnect().then(db => {
-		const collection = db.collection(objType);
+//////////////////////////////////////////////////////////////
+////////////////   DEMO SERVER BY USING ARRAY   //////////////
+//////////////////////////////////////////////////////////////
+//  restart users at array
+restartUsers();
 
-		collection.find({}).toArray((err, objs) => {
-			if (err) {
-				cl('Cannot get you a list of ', err)
-				res.json(404, { error: 'not found' })
-			} else {
-				cl("Returning list of " + objs.length + " " + objType + "s");
-				res.json(objs);
-			}
-			db.close();
-		});
-	});
-});
 //======================================================================
-// GETs filtered list
+// GETs filtered list - either matched or the rest. not the reuesting user
 app.get('/data/:objType/:filter/:id', function (req, res) {
 	const objType = req.params.objType;
 	const filter = req.params.filter;
 	const objId = req.params.id;
 	console.log('Get USERS FILTERED: obj:', objType, ' filter:', filter, ' objId:', objId);
-
-
 	var filteredUsers;
 	if (filter === 'matched') { // all that match
 		console.log('Get USERS FILTERED: inside matched');
-
 		filteredUsers = users.filter(function (user) {
-			//	console.log('*****Get FILTERED USERS****',  user.matches[objId])
-			return user.matches[objId] === true;
+		//	console.log('*****Get FILTERED USERS****',  user.matches)
+			return ((user.matches[objId] === true)&&(user.id!=objId));
 		});
 	}
 	else {
 		filteredUsers = users.filter(function (user) {//all that is not match
-			console.log('Get filters', user, user.matches)
-			return !(user.matches[objId] === true);
+	//	console.log('Get filters - browse', user)
+			return (!(user.matches[objId] === true)&&(user.id!=objId));
 		});
 	}
 	//console.log('Get USERS FILTERED: filtered users:', filteredUsers)
@@ -116,107 +84,19 @@ app.get('/data/:objType/:filter/:id', function (req, res) {
 });
 
 
-// // GETs matched list
-// app.get('/getMatched', function (req, res) {
-// 	console.log('Get Matched - this arrived in the get')
-// 	cl('getMatched-', users.length)
-// 	//	var matchedUsers = users.filter(user=>{return user.matches[id]}  ) 
-// 	res.json(users)
-// });
-
-//======================================================================
-// // GETs log in
-// app.post('/logIn', function (req, res) {
-// 	// const objType = req.params.objType;
-// 	cl('logIn:', req.body.data)
-
-// 	var userName = req.body.data.user;
-// 	var password = req.body.data.password;
-
-
-// 	dbConnect().then(db => {
-// 		const collection = db.collection('users');
-// 		collection.findOne({ userName, password }).then((user) => {
-// 			cl("logIn found user " + user);
-// 			db.close();
-// 			res.json(user)
-// 		}).catch(err => {
-// 			cl('Cannot get you that getUserById ', err)
-// 			db.close();
-// 		});
-// 	});
-// });
-//======================================================================
-// GETs log out
-app.post('/logOut', function (req, res) {
-	// const objType = req.params.objType;
-	cl('logOut:', req.body.data);
-	res.json(req.body.data)
-});
-//======================================================================
-// function getAllUsers() {
-// 	return dbConnect().then(db => {
-// 		const collection = db.collection('users');
-
-// 		collection.find({}).toArray((err, users) => {
-// 			cl("getAllUsers " + users.length);
-// 			return users;
-// 			db.close();
-// 		});
-// 	});
-// }
-//======================================================================
-// PUT - like
-// app.put('/likeUser', function (req, res) {
-// 	// const objId = req.params.id;
-// 	// const newObj = req.body;
-// 	console.log('LIKE: like/body/data:', req.body.data);
-// 	var id1 = req.body.data.id1;
-// 	var id2 = req.body.data.id2;
-// 	var user1 = getUserById(id1);
-// 	var user2 = getUserById(id2);
-
-// 	var bul = req.body.data.bul
-
-// 	user1.likes[user2.id] = bul;
-
-// 	if (bul === true) {//check for match
-// 		if (user2.likes[user1.id]) { //rhere is a match!
-// 			user1.matches[user1.id] = true;
-// 			user2.matches[user2.id] = true;
-// 			var obj = user2;
-// 			console.log('like: matches!!:', obj);
-// 			res.json({ user1, user2 });
-// 			return;
-// 		}
-// 	} else {//no match
-// 			user1.matches[user2.id] = false;
-// 			user2.matches[user1.id] = false;
-// 			console.log('like: NO matches!!:');
-// 			res.json({ user1 });
-// 	}
-// 	console.log('like: out of  condition ');
-
-// 	res.end();
-// });
-
 //====================================================================================
 app.put('/likeUser', function (req, res) {
-	console.log('LIKE1: req.body.data:', req.body.data);
+	//console.log('LIKE1: req.body.data:', req.body.data);
 	var id1 = req.body.data.id1;
 	var id2 = req.body.data.id2;
 	var user1 = getUserById(id1);
 	var user2 = getUserById(id2);
 	var bul = req.body.data.bul
-
-	console.log('LIKE2: user1, user2, bul', user1, user2, bul);
-
-
+	//console.log('LIKE2: user1, user2, bul', user1, user2, bul);
 	user1.likes[user2.id] = bul; // bul === true: like , false:dislike 
-	console.log('LIKE3: user1 likes', user1.likes);
-
+	//console.log('LIKE3: user1 likes', user1.likes);
 	if (bul === true) {//check for match
-		console.log('LIKE: user clicked "LIKE" ');
+		//console.log('LIKE: user clicked "LIKE" ');
 		if (user2.likes[user1.id] === true) { //there is a match!
 			user1.matches[user2.id] = true;
 			user2.matches[user1.id] = true;
@@ -227,7 +107,7 @@ app.put('/likeUser', function (req, res) {
 		else {//no match - not exist or not like
 			user1.matches[user2.id] = false;
 			user2.matches[user1.id] = false;
-			console.log('LIKE: NO matches!!, returning USER1: ', user1);
+		//	console.log('LIKE: NO matches!!, returning USER1: ', user1);
 			res.json({ user1 });
 		}
 	}
@@ -236,13 +116,11 @@ app.put('/likeUser', function (req, res) {
 		if (user1.matches[user2.id] === true) { //there was a match
 			user1.matches[user2.id] = false;
 			user2.matches[user1.id] = false;
-			console.log('LIKE: there was a match before, now reset it to unmatch:', user1);
-			//return;
+		//	console.log('LIKE: there was a match before, now reset it to unmatch:', user1);
 		}
 		res.json({ user1 });
 	}
-
-	console.log('LIKE: End of LIKE function');
+	//console.log('LIKE: End of LIKE function');
 	res.end();
 });
 
@@ -262,13 +140,11 @@ function getUserById(id) {
 	return objUser
 }
 //====================================================================================
-//======================================================================
 // GETs restart users
 app.get('/restartUsers', function (req, res) {
 	// const objType = req.params.objType;
 	restartUsers();
 	cl('GET - function - restartUsers: ', users.length)
-
 	res.json(users);
 });
 //======================================================================
@@ -315,14 +191,105 @@ app.get('/getUser', function (req, res) {
 	const id = req.params.id;
 	cl(`Getting you an ${objType} with id: ${objId}`);
 	var obj = getUserById(id)
-
-	// var obj = users.find(function(user){
-	// 	return (id===user.id)
-	// })
 	cl("Returning a user" + obj);
 	res.json(obj);
 
 });
+
+//====================================================================================
+// add user - old (update) or new
+app.post('/users/addUser', upload.single('file'), function (req, res) {
+
+var user=req.body.data;
+	if(req.body.data.id){
+		//console.log('ADD USER: OLD USER req.body.data.id', req.body.data.id)
+		var idx = getUserIdxById(req.body.data.id);
+	//	console.log('ADD USER: OLD USER get ID by IDX', req.body.data.id, idx);
+		users.splice(idx,1,user);
+	//	console.log('ADD USER: OLD USER updated: idx, user[idx]', idx, users[idx]);
+	}
+	else{
+	//console.log('ADD USER: NEW USER req.body', req.body.data);
+	var userId = getUniqueId();
+	var photos=[];
+	photos.push(`https://thechive.files.wordpress.com/2012/01/beautiful-women-${Math.floor(Math.random()*36)}.jpg`)
+//	console.log('*******ADD USER: image address', photos);
+	var templateUser = { id:userId, likes: {}, dislikes: {}, matches: {}, lastLine: "whatsapp??", photos: photos}
+	user = Object.assign(req.body.data,templateUser);
+//	console.log('ADD USER: **new created user**:',user)
+	users.push(user)
+	cl("ADD USER: user added", user);
+	}
+	res.json(user);
+});
+
+//====================================================================================
+// Login
+app.post('/login', function (req, res) {
+	//	cl('LOGIN0: req.body.user:', req.body.user);
+	//cl('LOGIN1: userName:', req.body.user.login, '/pass:', req.body.user.password);
+	var userName = req.body.user.login;
+	var password = req.body.user.password;
+	var currUser = users.find(function (user) {
+		//cl('LOGIN 1.5 user-', user.userName, user.password)
+		return (user.userName == userName && user.password == password)
+	})
+//	cl('LOGIN2: currUser:', currUser);
+	res.json(currUser);
+});
+
+//////////////////////////////////////////////////////////////
+////////////////   Yaron's simple ful server   //////////////
+//////////////////////////////////////////////////////////////
+
+//==============================================================================
+function dbConnect() {
+	return new Promise((resolve, reject) => {
+		// Connection URL
+		var url = 'mongodb://ilan:123@ds029665.mlab.com:29665/sprint4';
+		// Use connect method to connect to the Server
+		mongodb.MongoClient.connect(url, function (err, db) {
+			if (err) {
+				cl('Cannot connect to DB', err)
+				reject(err);
+			}
+			else {
+				//cl("Connected to DB");
+				resolve(db);
+			}
+		});
+	});
+}
+//======================================================================
+// GETs full list
+app.get('/data/:objType', function (req, res) {
+	console.log('GET FULL LIST - entered')
+	const objType = req.params.objType;
+	dbConnect().then(db => {
+		const collection = db.collection(objType);
+		collection.find({}).toArray((err, objs) => {
+			if (err) {
+				cl('Cannot get you a list of ', err)
+				res.json(404, { error: 'not found' })
+			} else {
+				cl("Returning list of " + objs.length + " " + objType + "s");
+				res.json(objs);
+			}
+			db.close();
+		});
+	});
+});
+
+//======================================================================
+
+// GETs log out
+app.post('/logOut', function (req, res) {
+	// const objType = req.params.objType;
+	cl('logOut:', req.body.data);
+	res.json(req.body.data)
+});
+
+
 //====================================================================================
 // DELETE
 app.delete('/data/:objType/:id', function (req, res) {
@@ -341,56 +308,21 @@ app.delete('/data/:objType/:id', function (req, res) {
 			}
 			db.close();
 		});
-
 	});
-
-
 });
-
-//====================================================================================
-// POST - addUser (or update data) - to array
-app.post('/users/addUser', upload.single('file'), function (req, res) {
-	//console.log('req.file', req.file);
-	var user;
-	console.log('ADD USER: ** req.body.DATA **', req.body.data);
-	if (req.body.data.id) {
-		console.log('ADD USER: USER exist (ID) - only update existing user)')
-		user = req.body.data;
-		var idx = getUserIdxById(user.id);
-		splice(idx, 1, user);
-	}
-	else {
-		console.log('ADD USER: NEW USER  (NO ID) - create new user)')
-		var userId = getUniqueId();
-		var photos = [];
-		photos.push(`https://thechive.files.wordpress.com/2012/01/beautiful-women-${Math.floor(Math.random() * 36)}.jpg`)
-		console.log('*******ADD USER: image address', photos);
-		var templateUser = { id: userId, likes: {}, dislikes: {}, matches: {}, lastLine: "whatsapp??", photos: photos }
-		user = Object.assign(req.body.data, templateUser);
-		console.log('ADD USER: new created user:', user)
-		users.push(user)
-		cl("ADD USER: user added", user);
-	}
-	res.json(user);
-});
-//====================================================================================
 
 
 
 //====================================================================================
 // POST - addUser 
 app.post('/addUser', upload.single('file'), function (req, res) {
-	//console.log('req.file', req.file);
 	// console.log('req.body', req.body);
-
 	const objType = req.params.objType;
 	cl("*************************************");
 	// cl('POST for req.body- ', req.body );
-
 	const obj = req.body.data;
 	delete obj._id;
 	//console.dir( obj);
-
 	// If there is a file upload, add the url to the obj
 	if (req.file) {
 		obj.imgUrl = serverRoot + req.file.filename;
@@ -413,7 +345,6 @@ app.post('/addUser', upload.single('file'), function (req, res) {
 	});
 
 });
-//====================================================================================
 
 
 
@@ -441,32 +372,16 @@ app.put('/data/:objType/:id', function (req, res) {
 	});
 });
 //====================================================================================
-//====================================================================================
 app.get('/logout', function (req, res) {
 	req.session.reset();
 	res.end('Loggedout');
 });
-//====================================================================================
-// get full list
-app.post('/login', function (req, res) {
-	cl('LOGIN0: req.body.user:', req.body.user);
-	cl('LOGIN1: userName:', req.body.user.login, '/pass:', req.body.user.password);
-	var userName = req.body.user.login;
-	var password = req.body.user.password;
 
-	var currUser = users.find(function (user) {
-		cl('LOGIN 1.5 user-', user.userName, user.password)
-		return (user.userName == userName && user.password == password)
-	})
-	cl('LOGIN2: currUser:', currUser);
-	res.json(currUser);
-});
-//====================================================================================
-//====================================================================================
-app.get('/logout', function (req, res) {
-	req.session.reset();
-	res.end('Loggedout');
-});
+// //====================================================================================
+// app.get('/logout', function (req, res) {
+// 	req.session.reset();
+// 	res.end('Loggedout');
+// });
 //====================================================================================
 function requireLogin(req, res, next) {
 	if (!req.session.user) {
@@ -480,7 +395,6 @@ function requireLogin(req, res, next) {
 app.get('/protected', requireLogin, function (req, res) {
 	res.end('User is loggedin, return some data');
 });
-
 
 // Kickup our server 
 // Note: app.listen will not work with cors and the socket
@@ -513,6 +427,190 @@ function getDocById(id) {
 }
 
 
+// ==================================================================================
+// ==================================================================================
+// ==================================================================================
+// ==================================================================================
+// ==================================================================================
+// ==================================================================================
+var msgs = [];
+var msgsCount = 1;
+//==============================================
+app.get('/', function (req, res) {
+	res.sendFile(__dirname + '/index.html');
+});
 
+//==============================================
+io.on('connection', function (socket) {
+	//====================
+	socket.on('disconnect', function (ev) {
+		// console.log('user disconnected, socket.id=', socket.id);
+		//	console.log('users ', users);
+		if (users.length > 0) {
+			var id = socket.id;
+			var idx = users.findIndex(function (user, idx) {
+				// console.log('***user ', user.id , ' socket id = ', id);
+				return user.socketId == id
+				// return idx ;
+			});
+
+			console.log('idx:', idx)
+			// console.log('user:', users[idx])
+			var txt = " user as left the building"
+			var obj = { txt: txt, processed: true, from: "server", type1: "user disconnected" }
+			if (idx >= 0) {
+				// console.log('splicing user:', users[idx].nickName)
+				users.splice(idx, 1);
+				sendAll('msg received', obj);
+			}
+		}
+	});
+	//====================
+	socket.on('sendMsg', function (msg) {
+		// console.log('chat.js/sendMsg: ' + msg);
+		msg = JSON.parse(msg);
+		updateSocket(msg,socket);
+		msg.processed = true;
+		// console.log('chat.js/sendNewMsg.type1: ' + msg.type1);
+		switch (msg.type1) {
+			case 'sendMsgToUser':
+				msgs.push(msg);
+				sendMsgToUser(msg.from,msg)
+				// if( msg.from !=msg.to)
+					sendMsgToUser(msg.to,msg)
+				break;
+			case 'typing':
+					// console.log('chat.js/typing: ' );
+			break;
+			case 'getOurHistory':
+					// console.log('chat.js/getOurHistory: ' );
+					getOurHistory(msg);
+			break;
+			case 'sendMsgToAll':
+					// console.log('chat.js/sendMsgToAll: ' + msg);
+				sendAll('msg received', msg);
+				break;
+			case 'typing':
+					// console.log('chat.js/typing: ' + msg);
+				msg.txt = ' is typing...'
+				sendAll('msg received', msg);s
+				break;
+			case 'initUser'://
+					// console.log('******************8chat.js/initUser: ' + msg);
+				var idx = getUserIdxById(msg.user);	
+				var id = socket.id;
+				users[idx].socket = id;
+				// pushToUsers(msg, socket);
+				break;
+		}
+
+	});
+});
+
+//====================================================================================
+function updateSocket(msg,socket){
+	var userId = msg.from;
+	var userIdx = getUserIdxById(userId);
+	// console.log('chat/updatesocket to id ',userId, 'idx:',userIdx);
+	var userIdx = getUserIdxById(userId);
+	if (userIdx>-1){
+		users[userIdx].socket = socket.id;
+	}
+}
+//====================================================================================
+
+function getOurHistory(filter) {
+
+	// console.log('*******chat/getMyHistory/msg:',filter);
+	// console.log('*******chat/getMyHistory/msgs:',filter.length);
+	var userMsgs = msgs.filter(function(msg){
+		// console.log('*******chat/getMyHistory/msg.from:',msg.from,'msg.userId/', user.id);
+		return((msg.from ==filter.from && msg.to ==filter.to )||(msg.from ==filter.to && msg.to ==filter.from ));
+	});
+	// console.log('*******chat/getMyHistory/userMsgs:',userMsgs.length);
+	filter.msgs = userMsgs;
+	var jsonMsg = JSON.stringify(filter);
+	if(filter.socket) {
+		io.to(filterm.socket).emit("msg received", jsonMsg);
+	}
+}
+//====================================================================================
+function sendMsgToUser(userId,msg) {
+	var user = getUserById(userId);
+	var jsonMsg = JSON.stringify(msg);
+	msg.status=3;
+	// console.log('*******chat/sendMsgToUser',user.socket);
+	if(user.socket) {
+		io.to(user.socket).emit("msg received", jsonMsg);
+	}
+}
+// //====================================================================================
+// function getUserById(id) {
+// 	var objUser = users.find(function (user) {
+// 		return (id === user.id)
+// 	})
+// 	return objUser
+// }
+// //====================================================================================
+// function getUserIdxById(id) {
+// 	return	users.findIndex(user =>user.id === id);
+// }
+// //==============================================
+
+
+function pushToUsers(msg, socket) {
+	//console.log('user:', msg)
+	// users.push(msg);
+
+	var res = users.find(function (user) {
+		return user.name == msg.name
+	}, msg)
+
+	console.log('push to users: msg.name', msg.name)
+	if (typeof (res) === 'undefined') {
+		console.log('socket: push to users - res is undefined')
+		var user = msg;
+		delete user['type1'];
+		delete user['processed'];
+		//console.log('user:' , user)
+		user.socketId = socket.id;
+		//	console.log('********************user:', user)
+		users.push(user);
+		//	console.log('users:', users)
+	}
+	sendAll('updateUsers')
+}
+
+//==============================================
+function sendAll(method1, msg) {
+	console.log('sendAll: : ', msg);
+	msg.at = Date.now();
+	msg.id = msgsCount + 1;
+	msgsCount++
+	msgs.push(msg);
+	// console.log('msgs :' , msgs)
+	if (msg.type1 === 'typing') {
+		deleteTypingMsg(msg)
+	}
+
+	console.log('send all:msgs length:', msgs.length)
+		var txt = JSON.stringify(msg)
+		io.emit(method1, txt);
+		console.log('sendAll2- msg sent:')
+
+}
+//==============================================
+function deleteTypingMsg(msg) {
+	setTimeout(() => {
+		var idx = msgs.findIndex(function (msg1) {
+			return msg.id === msg1.id;
+		})
+		msgs.splice(idx, 1);
+	}, 4000)
+}
 cl('WebSocket is Ready');
+
+
+
+
 

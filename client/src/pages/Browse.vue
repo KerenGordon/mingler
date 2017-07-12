@@ -1,10 +1,12 @@
 <template>
   <div>
     <md-card class="browse">
-      <md-card-media v-if="!newMatch">
+      <!--<md-card-media v-if="!newMatch">-->
+      <md-card-media >
         <swiper :options="swiperOption" ref="mySwiper">
           <swiper-slide v-for="(user, idx) in users" :key="idx" class="grid-content card" onSlideChangeEnd="onSwipe">
             <div class="img-container">
+              <!--<img :src="user.photos && user.photos[0]">-->
               <img :src="user.photos && user.photos[0]">
             </div>
             <div class="user-details">
@@ -30,7 +32,8 @@
       </md-card-media>
     </md-card>
   
-    <section class="actions" v-if="!newMatch">
+    <!--<section class="actions" v-if="!newMatch">-->
+    <section class="actions" >
       <a href="#" @click.prevent="userDislike">
         <md-icon class="material-icons md-size-2x dislike">highlight_off</md-icon>
       </a>
@@ -133,6 +136,9 @@ export default {
     userLike() {
       this.newMatchFlag = true;
       console.log('Browse: BEFORE LIKE state:', this.$store.getters.fetchLastMatch)
+      console.log('Browse: currUser:', this.$store.state.user.currUser)
+
+      
       const msg = { id1: this.$store.state.user.currUser.id, id2: this.user.id, bul: true }
       this.$store.dispatch({ type: LIKE, data: msg })
       this.userIdx = (this.users.length - 1 === this.userIdx) ? 0 : this.userIdx + 1;
@@ -219,7 +225,11 @@ export default {
 }
 
 .match-popup {
-  position: relative;
+  position: fixed;
+  top:0;
+  left:0;
+  background-color: gray;
+  z-index: 1000;
   width: 100%;
   height: 100%;
   line-height: 3em;
