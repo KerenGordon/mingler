@@ -23,7 +23,9 @@ socket.on('msg received', function (strMsg) {
     msg.atFormated= moment(msg.at).format('HH:mm');
       switch (msg.type1) {
         case 'getOurHistory':
-            pushToMsgs(msg)
+            msgs.splice(0,msgs.length,...msg.msgs);
+            // msgs.concat(msg.msgs);
+            console.log('msg.service.return.getOurHistory-',msgs.length )
         break;
         case 'sendMsgToUser':
             msgs.push(msg)
@@ -32,9 +34,9 @@ socket.on('msg received', function (strMsg) {
 
 });
 //==============================================
-function pushToMsgs(msg){
+function pushToMsgs(msgsToAdd){
       console.log('msg.service.pushToMsgs. msgs.length-', msgs.length);
-      msgs.concat(msg.msgs);
+      // msgs = msgsToAdd;
 }
 //==============================================
 function deleteTypingMsg(msg){

@@ -9,6 +9,7 @@ export const GET_MATCHED = 'GET_MATCHED';
 export const GET_BROWSED = 'GET_BROWSED';
 export const GET_USER = 'GET_USER';
 export const SET_CHAT_USER = 'SET_CHAT_USER';
+export const UPLOAD_PHOTO = 'UPLOAD_PHOTO';
 
 import service from '../services/service'
 
@@ -100,6 +101,12 @@ const mutations = {
     state.loginState = true;
     //console.log('store.mutation.LOG_OUT performed: ', state.currUser)
   },
+  [UPLOAD_PHOTO](state, { data }) {
+   console.log('store.mutation.UPLOAD_PHOTO: ')
+
+
+    //console.log('store.mutation.UPLOAD_PHOTO performed: ')
+  },
   [LIKE](state, payload) {
     // console.log('store.mutation.LIKE1a CURRUSER BEFORE: ', state.currUser, state.currUser.likes)
     // console.log('store.mutation.LIKE1b LAST MATCH BEFORE: ', state.lastMatch)
@@ -182,6 +189,14 @@ const actions = {
     console.log('store.actions.LOG_OUT1', payload)
     console.log('TBD - implement logout from session')
     context.commit(payload);
+  },
+  [UPLOAD_PHOTO](context, payload) {
+    console.log('store.actions.UPLOAD_PHOTO', payload)
+    var prm = service.uploadPhoto(payload);
+    prm.then(res => {
+      payload.user = res;
+      context.commit(payload);
+    })
   },
   [LOG_IN](context, payload) {
     console.log('store.LOG_IN:', payload)

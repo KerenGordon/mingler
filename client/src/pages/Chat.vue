@@ -53,6 +53,7 @@
                   </div>
                   <div class="actions">
                   <button class="btn-go-home" @click.prevent="moveToBrowse" >Back</button>
+                  <button class="btn-go-home" @click.prevent="getOurHistory" >get hist</button>
                     <i class="zmdi zmdi-phone"></i>
                   </div>
                 </div>
@@ -66,7 +67,7 @@
                       <span class="metadata">
                         <span class="time">{{msg.atFormated}}</span>
                         <span class="tick" v-if="msg.from === currUser.id">
-                          <svg v-if="!msg.processed" xmlns="http://www.w3.org/2000/svg" width="16"
+                          <svg v-if="msg.status ='read'" xmlns="http://www.w3.org/2000/svg" width="16"
                                height="15" id="msg-dblcheck" x="2047" y="2061"><path d="M15.01 3.316l-.478-.372a.365.365 0 0 0-.51.063L8.666 9.88a.32.32 0 0 1-.484.032l-.358-.325a.32.32 0 0 0-.484.032l-.378.48a.418.418 0 0 0 .036.54l1.32 1.267a.32.32 0 0 0 .484-.034l6.272-8.048a.366.366 0 0 0-.064-.512zm-4.1 0l-.478-.372a.365.365 0 0 0-.51.063L4.566 9.88a.32.32 0 0 1-.484.032L1.892 7.77a.366.366 0 0 0-.516.005l-.423.433a.364.364 0 0 0 .006.514l3.255 3.185a.32.32 0 0 0 .484-.033l6.272-8.048a.365.365 0 0 0-.063-.51z" fill="#92a58c"/></svg>
                           <svg v-else xmlns="http://www.w3.org/2000/svg" width="16" height="15" 
                                 id="msg-dblcheck-ack" x="2063" y="2076"><path d="M15.01 3.316l-.478-.372a.365.365 0 0 0-.51.063L8.666 9.88a.32.32 0 0 1-.484.032l-.358-.325a.32.32 0 0 0-.484.032l-.378.48a.418.418 0 0 0 .036.54l1.32 1.267a.32.32 0 0 0 .484-.034l6.272-8.048a.366.366 0 0 0-.064-.512zm-4.1 0l-.478-.372a.365.365 0 0 0-.51.063L4.566 9.88a.32.32 0 0 1-.484.032L1.892 7.77a.366.366 0 0 0-.516.005l-.423.433a.364.364 0 0 0 .006.514l3.255 3.185a.32.32 0 0 0 .484-.033l6.272-8.048a.365.365 0 0 0-.063-.51z" fill="#4fc3f7"/></svg>
@@ -126,6 +127,7 @@ export default {
     this.onlineUsers = msgService.getOnlineUsers();
     this.initUser();
     this.getOurHistory() ;
+    this.markAllMsgsAsRead() ;
     this.currUser = this.$store.getters.fetchCurrUser;
     this.chatUser = this.$store.getters.fetchChatUser;
 
@@ -150,10 +152,15 @@ export default {
       // msgService.closeSocket();
   },
   methods: {
+    markAllMsgsAsRead(){
+
+    },
     createEmptyMsg() {
         // console.log('Chat.createEmptyMsg, txt:');
-      return {txt: '', processed: false, from: this.currUser.id,fromName:this.currUser.name, 
-                  to:this.chatUser.id ,toName:this.chatUser.name, type1: 'sendMsgToUser'};
+      return {txt: '', processed: false, from: this.currUser.id,
+                fromName:this.currUser.name,fromSocket:this.currUser.socket,
+                  to:this.chatUser.id ,toName:this.chatUser.name,status:'created',
+                  type1: 'sendMsgToUser'};
     },
  //===========================
     getOurHistory() {
@@ -639,13 +646,13 @@ img{
 
 @media (max-width: 768px) {
   .marvel-device.nexus5 {
-    border-radius: 0;
+    /*border-radius: 0;
     flex: none;
     padding: 0;
     max-width: none;
     overflow: hidden;
     height: 100%;
-    width: 100%;
+    width: 100%;*/
   }
 
   .marvel-device > .screen .chat {

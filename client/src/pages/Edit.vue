@@ -45,6 +45,22 @@
         <el-input type="textarea" v-model="user.description"></el-input>
       </el-form-item>
       <el-form-item>
+
+
+    <div>
+
+            <el-upload
+              class="avatar-uploader"
+              action=""
+              :show-file-list="false"
+              :http-request="httpRequest">
+              <img v-if="imageUrl" :src="imageUrl" class="avatar">
+              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+            </el-upload>
+      
+      </div>
+
+
         <el-button @click="moveToBrowse">Cancel</el-button>
         <el-button type="md-accent" @click.stop="submitForm">Submit</el-button>
         <div v-if="loadingFlag" class="loading-gif"> <img  class="loading-image" src="../assets/loading.gif"></div>
@@ -55,13 +71,20 @@
 
 <script>
 import { ADD_USER } from '../store/store'
-import { LOG_OUT } from '../store/store'
+import { LOG_OUT } from '../store/store'//
+import { UPLOAD_PHOTO } from '../store/store'
+import axios from 'axios';
 
 export default {
   data() {
     return {
       loadingFlag: false,
-      //currUser:  this.$store.state.user.currUser,
+      //photo loader=========
+          cloud_name: 'ilanbeyos',
+          upload_preset: 'vlwm5wec',
+          msg: 'Simple Img Uploader Using cloudinary & axios & Vue',
+          imageUrl: '',
+      //photo loader=========
       user: {
      //   id: '',
         name: '',
@@ -115,9 +138,35 @@ export default {
        logoutUser() {
       console.log('Edit: perform logout ')
       this.$store.dispatch({ type: LOG_OUT});
-      this.$router.push('/')
+      this.$router.push('/') 
+    },
+  httpRequest(req){
+        // this.$store.dispatch({ type: UPLOAD_PHOTO});
+
+      let formData = new FormData();
+      formData.append('file', req.file);
+      formData.append('upload_preset', this.upload_preset);
+
+      axios({
+        url: `https://api.cloudinary.com/v1_1/${this.cloud_name}/image/upload`,
+        method: 'POST',
+        headers: {
+            'Content-Type': undefined,
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        data: formData,
+      }).then( (res) => {
+        if (res.status === 200){
+          console.log('upload sucsess', res);
+          this.imageUrl = res.data.url;
+        }
+        else{
+          console.info('oops, something went wrong', res);
+        }
+      }).catch( (err) => {
+        console.error(err);
+      });
     }
- 
   }
 }
   
@@ -194,6 +243,30 @@ a:hover {
 width: 10%;
 
 }
+.avatar-uploader .el-upload {
+    border: 1px dashed black;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .avatar-uploader .el-upload:hover {
+    border-color: #20a0ff;
+  }
+  .avatar-uploader-icon {
+    font-size: 28px;
+    color: #8c939d;
+    width: 178px;
+    height: 178px;
+    line-height: 178px;
+    text-align: center;
+  }
+  .avatar {
+    width: 178px;
+    height: 178px;
+    display: block;
+  }
+
 
 
 </style>

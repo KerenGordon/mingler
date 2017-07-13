@@ -5,6 +5,15 @@ import serverService from './service'
 import axios from 'axios'
 
 //=====================================================================
+const uploadPhoto = msg => {
+      console.log('service.uploadPhoto:', msg);
+  // return axios.get('http://localhost:3003/uploadPhoto', msg)
+  //   .then(function (response) {
+  //     console.log('service.uploadPhoto:', response.data);
+  //     return response.data;
+  //   })
+}
+//=====================================================================
 const restartUsers = msg => {
       console.log('service.restartUsers1:', msg);
   return axios.get('http://localhost:3003/restartUsers', msg)
@@ -126,6 +135,7 @@ const sendMsg1111 = msg => {
 export default {
   sendMsg,
   addUser,
+  uploadPhoto,
   like,
   restartUsers,
   getMatched,
