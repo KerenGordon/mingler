@@ -108,15 +108,8 @@ const mutations = {
     //console.log('store.mutation.UPLOAD_PHOTO performed: ')
   },
   [LIKE](state, payload) {
-    // console.log('store.mutation.LIKE1a CURRUSER BEFORE: ', state.currUser, state.currUser.likes)
-    // console.log('store.mutation.LIKE1b LAST MATCH BEFORE: ', state.lastMatch)
-
-    // console.log('store.mutation.LIKE2a payload: ', payload)
-    // console.log('store.mutation.LIKE2b payload USER: ', payload.user, payload.user.likes)
     state.currUser = payload.user.user1;
     if (payload.user.user2) state.lastMatch = payload.user.user2; else state.lastMatch = null;
-    //console.log('store.mutation.LIKE3a CURRUSER AFTER: ', state.currUser)
-    //console.log('store.mutation.LIKE3b LAST MATCH AFTER: ', state.lastMatch)
   },
   [LOG_IN](state, { user }) {
     // console.log('storec.mutation.LOG_IN: status',state.loginStatus)

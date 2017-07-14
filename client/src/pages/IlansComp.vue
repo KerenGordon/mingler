@@ -22,7 +22,6 @@
 //from '../store/todos.store'
 import { LOG_IN } from '../store/store'
 import { LOG_OUT } from '../store/store'
-import { SND_MSG } from '../store/store'
 import { GET_MATCHED } from '../store/store'
 import { ADD_USER } from '../store/store'
 import { LIKE } from '../store/store'
