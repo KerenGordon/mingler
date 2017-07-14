@@ -8,6 +8,7 @@
     <button @click="like(3,true)">like!!</button>
     <button @click="like(3,false)">unlike!!</button>
     <button @click="getUser(1)">get user</button>
+    <button @click="ilan(1,2)">get last line 1/2</button>
                     
     <input v-model="user.name" class="input-msg" name="input" placeholder="name" >
     <input v-model="user.password" class="input-msg" name="input" placeholder="password" >
@@ -20,6 +21,7 @@
 
 <script>
 //from '../store/todos.store'
+import { ILAN } from '../store/store'
 import { LOG_IN } from '../store/store'
 import { LOG_OUT } from '../store/store'
 import { GET_MATCHED } from '../store/store'
@@ -52,6 +54,11 @@ export default {
       console.log(msg);
       this.$store.dispatch({ type: LOG_OUT, data: msg });
       // debugger;
+    },
+    ilan(id1,id2) {
+      const msg = { id1,id2 }
+      console.log('ilanComp ilan', msg);
+      this.$store.dispatch({ type: ILAN, data: msg });
     },
     logIn() {
       console.log('ilanComp logIn', this.user.name, '/',this.user.password);

@@ -1,6 +1,7 @@
 
 export const SND_MSG = 'SND_MSG';
 export const LOG_IN = 'LOG_IN';
+export const ILAN = 'ILAN';
 export const LOG_OUT = 'LOG_OUT';
 export const RESTART_USERS = 'RESTART_USERS';
 export const ADD_USER = 'ADD_USER';
@@ -103,9 +104,9 @@ const mutations = {
   },
   [UPLOAD_PHOTO](state, { data }) {
    console.log('store.mutation.UPLOAD_PHOTO: ')
-
-
-    //console.log('store.mutation.UPLOAD_PHOTO performed: ')
+  },
+  [ILAN](state, { data }) {
+   console.log('store.mutation.ILAN: ')
   },
   [LIKE](state, payload) {
     state.currUser = payload.user.user1;
@@ -178,6 +179,10 @@ const mutations = {
 }
 
 const actions = {
+  [ILAN](context, payload) {
+    console.log('store.actions.ilan', payload)
+    context.commit(payload);
+  },
   [LOG_OUT](context, payload) {
     console.log('store.actions.LOG_OUT1', payload)
     console.log('TBD - implement logout from session')

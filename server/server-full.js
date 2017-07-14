@@ -125,17 +125,21 @@ app.put('/likeUser', function (req, res) {
 });
 
 //====================================================================================
-
 function getUserIdxById(id) {
 	var index = users.findIndex((user) => user.id === id);
 	return index;
 }
-
 //====================================================================================
-
 function getUserById(id) {
 	var objUser = users.find(function (user) {
 		return (id === user.id)
+	})
+	return objUser
+}
+//====================================================================================
+function getUserBySocket(socketId) {
+	var objUser = users.find(function (user) {
+		return (user.socket=== socketId)
 	})
 	return objUser
 }
@@ -413,7 +417,11 @@ http.listen(3003, function () {
 io.on('connection', function (socket) {
 	console.log('a user connected');
 	socket.on('disconnect', function () {
-		console.log('user disconnected');
+		var user =getUserBySocket(socket.id)
+		if (!user) return;
+		var idx= getUserIdxById(user.id);
+		users[idx].socket = null;
+		console.log('user disconnected/', user.id,'/socket:',user.socket );
 	});
 	socket.on('chat message', function (msg) {
 		// console.log('message: ' + msg);
@@ -511,20 +519,24 @@ io.on('connection', function (socket) {
 				msg.txt = ' is typing...'
 				sendAll('msg received', msg);
 				break;
-			case 'ilan'://UserReadAllMsgs
+			case 'ilan':
 					console.log('chat.js/ilan: ' + msg);
 				ilan('msg received', msg);
 				break;
 			case 'UserReadAllMsgs'://
-					console.log('chat.js/UserReadAllMsgs: ' + msg);
+					console.log('chat./UserReadAllMsgs: ' + msg);
 				UserReadAllMsgs(msg);
 				break;
-			case 'initUser'://
+			case 'userIsMovingOutOfChat'://
+					console.log('chat./userIsMovingOutOfChat: ' + msg);
+				userIsMovingOutOfChat(msg);
+				break;
+			case 'initUser'://    
 					// console.log('******************8chat.js/initUser: ' + msg);
 				var idx = getUserIdxById(msg.from);	
 				var id = socket.id;
 				users[idx].socket = id;
-				// pushToUsers(msg, socket);
+				getOurHistory(msg)
 				break;
 		}
 
@@ -532,7 +544,14 @@ io.on('connection', function (socket) {
 });
 //(msg)
 //====================================================================================
-function askUserToInit(socket){
+function userIsMovingOutOfChat(msg){//userIsMovingOutOfChat(msg);
+	var idx = getUserIdxById(msg.from);
+	users[idx].socket = null;
+	console.log('*******chat/userIsMovingOutOfChat/ user:', idx);
+
+}
+//====================================================================================
+function askUserToInit(socket){//userIsMovingOutOfChat(msg);
 	console.log('*******chat/askUserToInit');
 	var msg = {type1:'askUserToInit'};
 	var jsonMsg = JSON.stringify(msg);
@@ -550,7 +569,7 @@ function UserReadAllMsgs(msg){
 	var msgs= get2UsersHistory(msg.from,msg.to);
 	var from = msg.from;
 	msgs = msgs.map((msg)=>{
-		if (msg.to = from)
+		if (msg.to === from)
 		 msg.status = 'read';
 		return msg;
 	})
@@ -608,14 +627,18 @@ function updateSocket(msg,socket){
 function sendMsgToUser(userId,msg) {
 	var user = getUserById(userId);
 	if(user.socket) {
-	// msg.status = 'sentToClient';
-	if(userId === msg.to )
-	msg.status ='read';
-	var jsonMsg = JSON.stringify(msg);
-	// console.log('*******chat/sendMsgToUser',user.socket);
-	// if(user.socket) {
+		//user is online
+		if(userId === msg.to ){	
+			msg.status ='read';
+		}
+		var jsonMsg = JSON.stringify(msg);
 		io.to(user.socket).emit("msg received", jsonMsg);
-	}
+		}else{
+			var idx = getUserIdxById(userId);
+			users[idx].noteFromServer = 'newMsgs';
+			console.log('sendMsgToUser:unread msgs to user', idx)
+
+		}
 }
 // //====================================================================================
 // function getUserById(id) {
