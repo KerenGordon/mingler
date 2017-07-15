@@ -51,7 +51,7 @@ socket.on('msg received', function (strMsg) {
             initUser(msg);
         break;
         case 'askUserToInit':
-            sendUser({type1:'initUser',from:currUser, socket:socket.id})
+            if (currUser) sendUser({type1:'initUser',from:currUser, socket:socket.id})
         break;
       }
 

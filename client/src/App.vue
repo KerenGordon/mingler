@@ -7,12 +7,24 @@
 </template>
 <script>
 import MainNav from '@/components/MainNav';
+import { GET_VALS_FROM_STORAGE } from './store/store'
+
 export default {
   name: 'app',
   data() {
     return {
     }
   },
+    created() {
+      this.getValsFromStorage() ;
+    },
+    methods: {
+        getValsFromStorage(){
+            var msg = {dommy:'dommy'}
+            this.$store.dispatch({ type: GET_VALS_FROM_STORAGE, msg: msg })
+
+        }
+    },
   components: {
     MainNav,
   }

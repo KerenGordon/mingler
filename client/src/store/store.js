@@ -10,7 +10,8 @@ export const GET_MATCHED = 'GET_MATCHED';
 export const GET_BROWSED = 'GET_BROWSED';
 export const GET_USER = 'GET_USER';
 export const SET_CHAT_USER = 'SET_CHAT_USER';
-export const UPLOAD_PHOTO = 'UPLOAD_PHOTO';
+export const UPLOAD_PHOTO = 'UPLOAD_PHOTO';//
+export const GET_VALS_FROM_STORAGE = 'GET_VALS_FROM_STORAGE';//
 
 import service from '../services/service'
 
@@ -52,11 +53,11 @@ import service from '../services/service'
 
 const state = {
   usersMatched: '',
-  usersBrowsed:'',
-  currUser: '',
+  usersBrowsed:'',  //changed - 15/7 ilan
+  currUser: null,
   user2: null,
   lastMatch: {},
-  chatUser: {},
+  chatUser: null, //changed - 15/7 ilan
   loginStatus: true
 
 };
@@ -118,6 +119,9 @@ const mutations = {
     // console.log('TBD - store.mutation.LOG_IN')
     if (user){
                  state.currUser = user;
+                 var myJSON = JSON.stringify(user);
+                 localStorage.currUser = myJSON;
+
                   state.loginStatus = true;
                       //  console.log('store.mutation.LOG_IN: login approved',state.loginStatus)
                   }
@@ -159,6 +163,9 @@ const mutations = {
  [SET_CHAT_USER](state, { user }) {
     console.log('store.mutation.SET_CHAT_USER: ', user)
     state.chatUser = user;
+    var myJSON = JSON.stringify(user);
+    localStorage.chatUser = myJSON;
+
     console.log('store.mutation.SET_CHAT_USER in store: ', state.chatUser)
 
   },//
@@ -173,12 +180,31 @@ const mutations = {
     state.user2 = data
     console.log('store.user2: ', state.user2)
   },
+  [GET_VALS_FROM_STORAGE](state, { msg }) {
+    console.log('store.mutation.GET_VALS_FROM_STORAGE: ', msg)
+    if (!state.currUser){
+       state.currUser = JSON.parse(localStorage.getItem("currUser"));
+        console.log('store.GET_VALS_FROM_STORAGE, got currUser from storage: ', state.currUser)
+    };
+    if (!state.chatUser){
+       state.chatUser = JSON.parse(localStorage.getItem("chatUser"));
+        console.log('store.GET_VALS_FROM_STORAGE, got chatUser from storage: ', state.chatUser)
+
+    };
+  },
   SET_FILTER(state, { filter }) {
     state.filterBy = filter;
   }
 }
 
-const actions = {
+const actions = {//
+  
+  //=========nwe from 15/7=========================
+  [GET_VALS_FROM_STORAGE](context, payload) {
+    console.log('store.actions.GET_VALS_FROM_STORAGE', payload)
+    context.commit(payload);
+  },
+  //===============================================
   [ILAN](context, payload) {
     console.log('store.actions.ilan', payload)
     context.commit(payload);
