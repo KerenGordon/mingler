@@ -503,20 +503,8 @@ io.on('connection', function (socket) {
 				sendMsgToUser(msg.from,msg)
 				// if( msg.from !=msg.to)
 				break;
-			case 'typing':
-					// console.log('chat.js/typing: ' );
-			break;
-			case 'getOurHistory':
-					// console.log('chat.js/getOurHistory: ' );
-					getOurHistory(msg);
-			break;
 			case 'sendMsgToAll':
 					// console.log('chat.js/sendMsgToAll: ' + msg);
-				sendAll('msg received', msg);
-				break;
-			case 'typing':
-					// console.log('chat.js/typing: ' + msg);
-				msg.txt = ' is typing...'
 				sendAll('msg received', msg);
 				break;
 			case 'ilan':
@@ -531,24 +519,55 @@ io.on('connection', function (socket) {
 					console.log('chat./userIsMovingOutOfChat: ' + msg);
 				userIsMovingOutOfChat(msg);
 				break;
-			case 'initUser'://    
-					// console.log('******************8chat.js/initUser: ' + msg);
-				var idx = getUserIdxById(msg.from);	
-				var id = socket.id;
-				users[idx].socket = id;
-				getOurHistory(msg)
+			case 'getMyHistory'://    
+					getMyHistory(msg);
 				break;
+			case 'initUser'://    
+					initUser(msg,socket);
+				break;
+			default:
+				console.log('chat.js/switch: ' + msg.type1);
 		}
 
 	});
 });
 //(msg)
 //====================================================================================
+function getMyHistory(msg){//
+	var msgs = getUserHistory(msg);
+	msg.msgs = msgs
+	sendMsgToUser(msg.from,msg)
+}
+//====================================================================================
+function initUser(msg,socket){//getMyHistory
+	var idx = getUserIdxById(msg.from);	
+	var socketId = socket.id;
+	users[idx].socket = socketId;
+	
+	msg.from = users[idx];
+	var msgs = getUserHistory(msg);
+	msg.msgs = msgs
+	sendMsgToUser(msg.from,msg)
+}
+//====================================================================================
+function getUserHistory(msg){
+	var userMsgs = msgs.filter(function(singleMsg){
+		// console.log('*******chat/getUserHistory/msg.from:',msg.from,'msg.userId/', user.id);
+		var bul = (singleMsg.from ==msg.from || singleMsg.to ==msg.from);		
+		return(bul);
+	});
+	console.log('*******chat/getUserHistory/userMsgs:',userMsgs.length);
+	return userMsgs;
+
+}
+
+
+
+//====================================================================================
 function userIsMovingOutOfChat(msg){//userIsMovingOutOfChat(msg);
 	var idx = getUserIdxById(msg.from);
 	users[idx].socket = null;
 	console.log('*******chat/userIsMovingOutOfChat/ user:', idx);
-
 }
 //====================================================================================
 function askUserToInit(socket){//userIsMovingOutOfChat(msg);
@@ -566,39 +585,44 @@ function getLastLine(from,to){
 //====================================================================================
 function UserReadAllMsgs(msg){
 	console.log('*******chat/UserReadAllMsgs/msg:',msg);
-	var msgs= get2UsersHistory(msg.from,msg.to);
-	var from = msg.from;
-	msgs = msgs.map((msg)=>{
-		if (msg.to === from)
-		 msg.status = 'read';
-		return msg;
-	})
-	msg.msgs = msgs;//update msgs to send to users
-	getOurHistory(msg);//update msgs to sender side
-	msg.type1 = 'getMyHistory';//change type1 before sending 
-	sendMsgToUser(from,msg)//update at pasive side
+	var msgs= getAllUnreadMsgs(msg.to,msg.from)
+	msg.msgs = msgs;
+	// getOurHistory(msg);//update msgs to sender side
+	msg.type1 = 'updateMsgs';//change type1 before sending 
+	sendMsgToUser(msg.from,msg)//update at pasive side
+}
+//====================================================================================
+function getAllUnreadMsgs(idFrom,IdTo){
+		var unReadMsgs = msgs.filter(function(msg){
+		var bul1 = (msg.from ==idFrom && msg.to ==IdTo);
+		var bul2 = (msg.status !='read' );
+		
+		return(bul1)&&(bul2);
+	});
+	console.log('*******chat/getAllUnreadMsgs/userMsgs.length:',unReadMsgs.length);
+	return unReadMsgs
+
 }
 //====================================================================================
 function ilan(msg){
 	console.log('*******chat/ilan/msg:',filter);
-	getOurHistory(msg);
 }
 //====================================================================================
-function getOurHistory(filter) {
+// function getOurHistory(filter) {
 
-	console.log('*******chat/getMyHistory/msg:',filter);
-	// console.log('*******chat/getMyHistory/msgs:',filter.length);
-	var to=filter.to
-	var from=filter.from
-	var usersMsgs = get2UsersHistory(from,to);
-	console.log('*******chat/getMyHistory/userMsgs:',usersMsgs.length);
-	filter.msgs = usersMsgs;
-	var msg = JSON.stringify(filter);
-	// if(filter.socket) {
-		// io.to(filter.fromSocket).emit("msg received", jsonMsg);
-		sendMsgToUser(from,filter)
-	// }
-}
+// 	console.log('*******chat/getMyHistory/msg:',filter);
+// 	// console.log('*******chat/getMyHistory/msgs:',filter.length);
+// 	var to=filter.to
+// 	var from=filter.from
+// 	var usersMsgs = get2UsersHistory(from,to);
+// 	console.log('*******chat/getMyHistory/userMsgs:',usersMsgs.length);
+// 	filter.msgs = usersMsgs;
+// 	var msg = JSON.stringify(filter);
+// 	// if(filter.socket) {
+// 		// io.to(filter.fromSocket).emit("msg received", jsonMsg);
+// 		sendMsgToUser(from,filter)
+// 	// }
+// }
 //====================================================================================
 function get2UsersHistory(id1,id2) {
 	var usersMsgs = msgs.filter(function(msg){

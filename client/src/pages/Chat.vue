@@ -54,7 +54,7 @@
                   </div>
                   <div class="actions">
                   <!--<button class="btn-go-home" @click.prevent="moveToBrowse" >Back</button>-->
-                  <button class="btn-go-home" @click.prevent="getOurHistory" >get hist</button>
+                  <button class="btn-go-home" @click.prevent="getMyHistory" >get hist</button>
                     <i class="zmdi zmdi-phone"></i>
                   </div>
                 </div>
@@ -117,7 +117,7 @@ export default {
     return {
       // nickName: null,
       msgs: [],
-      onlineUsers:[]
+      // onlineUsers:[]
       // chatUser: {} ,
       // currUser:{}
     }
@@ -125,11 +125,14 @@ export default {
   created() {
     this.msgs = msgService.getMsgs();
     this.newMsg = this.createEmptyMsg();
-    this.onlineUsers = msgService.getOnlineUsers();
-    this.initUser();
-    this.getOurHistory() ;
+    // this.onlineUsers = msgService.getOnlineUsers();
+    // this.initUser();
+    console.log('chat.created.1:');
+    this.getMyHistory() ;
     this.markAllMsgsAsRead() ;
+    console.log('chat.created.2:');
     this.currUser = this.$store.getters.fetchCurrUser;
+        console.log('chat.created.3:');
     this.chatUser = this.$store.getters.fetchChatUser;
 
   },
@@ -151,7 +154,7 @@ export default {
       }
   },
    beforeDestroy() {
-      this.userIsMovingOutOfChat(this.currUser);
+      // this.userIsMovingOutOfChat(this.currUser);
   },
   methods: {
     markAllMsgsAsRead(){
@@ -178,11 +181,11 @@ export default {
                   type1: 'sendMsgToUser'};
     },
  //===========================
-    getOurHistory() {
+    getMyHistory() {
        
         var msg = Object.assign({}, this.newMsg);
-        msg.type1 = 'getOurHistory';
-        // console.log('Chat.getOurHistory:', msg);
+        msg.type1 = 'getMyHistory';
+        console.log('Chat.getMyHistory:', msg);
         msgService.send(msg);
         this.newMsg = this.createEmptyMsg();
     },
@@ -193,6 +196,7 @@ export default {
  //===========================
     msgClass(msg) { 
       if (msg.from==='server') return 'server';
+      console.log('Chat: msgClass')
       return (msg.from !== this.currUser.id) ? 'received' : 'sent';
     },
  //========================== 
@@ -284,6 +288,7 @@ img{
     color: white;
 }
 .page {
+  
   width: 100%;
   height: 100%;
   display: flex;
