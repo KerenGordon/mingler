@@ -54,14 +54,14 @@
                   </div>
                   <div class="actions">
                   <!--<button class="btn-go-home" @click.prevent="moveToBrowse" >Back</button>-->
-                  <button class="btn-go-home" @click.prevent="getMyHistory" >get hist</button>
+                  <!--<button class="btn-go-home" @click.prevent="getMyHistory" >get hist</button>-->
                     <i class="zmdi zmdi-phone"></i>
                   </div>
                 </div>
                 <div class="conversation">
                   <div class="conversation-container">
-<!--{{msgs}}-->
-                    <div  v-for="msg in msgs" class="message" :class="msgClass(msg)">
+<!-----{{msgs}}----->
+                    <div  v-for="msg in msgs" v-if="msg.from === currUser.id || msg.from === chatUser.id " class="message" :class="msgClass(msg)">
                       <div class = " msg-from" >{{msg.fromName}}</div>
                       <!--<div v-if="msg.status" class = " msg-txt" >status: {{msg.status}}</div>-->
                       <div class = " msg-txt" >{{msg.txt}}/st:{{msg.status}}</div>
@@ -116,32 +116,44 @@ export default {
   data() {
     return {
       // nickName: null,
-      msgs: [],
+      // msgs: msgService.getMsgs(),
       // onlineUsers:[]
       // chatUser: {} ,
       // currUser:{}
+      msgs:['333']
     }
   },
   created() {
-    this.msgs = msgService.getMsgs();
     this.newMsg = this.createEmptyMsg();
-    // this.onlineUsers = msgService.getOnlineUsers();
-    // this.initUser();
+    // this.msgs = msgService.getMsgs();
     console.log('chat.created.1:');
-    this.getMyHistory() ;
-    this.markAllMsgsAsRead() ;
+    // this.getMyHistory() ;
     console.log('chat.created.2:');
     this.currUser = this.$store.getters.fetchCurrUser;
         console.log('chat.created.3:');
     this.chatUser = this.$store.getters.fetchChatUser;
+    this.msgs = msgService.getMsgs();
+    this.getOurHistory() ;
 
   },
   computed:{
-      // msgs() {
-      //     console.log('chat.computed.msgs:');
-      //     var msgs = msgService.getMsgs();
-      //     msgs = msgs.filter((msg)=>{return (msg.from== this.currUser)&&(msg.to== this.chatUser)})
-      //   return msgs;
+      msgs() {
+          var msgs = msgService.getMsgs();
+          return msgs;
+      },
+          //msgs = msgs.filter((msg)=>{return (msg.from== this.currUser)&&(msg.to== this.chatUser)})
+          // var newReadMsgs = [];
+          // msgs.map((msg)=>{   //marking all unread msgs ass read
+          //    if (msg.from ===this.chatUser && msg.status !='read'){
+          //       msg.status= 'read';
+          //       newReadMsgs.push(msg.id);
+          //    }
+          //     return msg;
+          // })
+          // (isNewMsgs.length>0)? markMsgsAsRead(newReadMsgs):true;   //=> activate only if there is unread msgs.
+          // console.log('chat.computed.msgs:markMsgsAsRead');
+
+          //  this.markMsgsAsRead(newReadMsgs); 
       // },
       currUser() {
           return this.$store.getters.fetchCurrUser;
@@ -154,16 +166,17 @@ export default {
       }
   },
    beforeDestroy() {
-      // this.userIsMovingOutOfChat(this.currUser);
+      this.userIsMovingOutOfChat(this.currUser);
   },
   methods: {
-    markAllMsgsAsRead(){
-        var msg = Object.assign({}, this.newMsg);
-        msg.type1= 'UserReadAllMsgs';
-        console.log('Chat.markAllMsgsAsRead:', msg);
-        msgService.send(msg);
+    // markMsgsAsRead(msgs){
+    //     var msg = Object.assign({}, this.newMsg);
+    //     msg.type1= 'markMsgsAsRead';
+    //     msg.msgs = msgs;
+    //     console.log('Chat.markMsgsAsRead:', msg);
+    //     msgService.send(msg);
 
-    },
+    // },
  //========================== 
     userIsMovingOutOfChat(){
         var msg = Object.assign({}, this.newMsg);
@@ -181,11 +194,11 @@ export default {
                   type1: 'sendMsgToUser'};
     },
  //===========================
-    getMyHistory() {
+    getOurHistory() {
        
         var msg = Object.assign({}, this.newMsg);
-        msg.type1 = 'getMyHistory';
-        console.log('Chat.getMyHistory:', msg);
+        msg.type1 = 'getOurHistory';
+        console.log('Chat.getOurHistory:', msg);
         msgService.send(msg);
         this.newMsg = this.createEmptyMsg();
     },
@@ -209,7 +222,7 @@ export default {
       var msg = {txt: '', processed: false, from: this.currUser.id,fromName:this.currUser.name, 
                   to:this.chatUser.id ,toName:this.chatUser.name, type1: 'typing'};
       // console.log('typing:' ,obj);
-      msgService.send(msg);
+      // msgService.send(msg);
     },
  //==========================
     initUser() {
@@ -706,7 +719,7 @@ img{
     height: calc(100vh - 55px);
   }
   .conversation .conversation-container {
-    height: calc(100vh - 120px);
+    height: calc(100vh - 200px);
   }
 }
 

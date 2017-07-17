@@ -156,32 +156,32 @@ function restartUsers() {
 
 	users = [
 		{
-			id: 1, name: 'lora from server', gender: 'f', birth: '1990', description: 'like to love',
+			id: 1, name: 'lora from server', gender: 'f', birth: '1990', description: 'like to love',chatUser:null,socket:null,
 			userName: '111', password: '111', likes: { '2': true }, dislikes: { '11': false }, matches: {2:true},
 			lastLine: "whatsapp??", photos: ['http://dreamatico.com/data_images/woman/woman-1.jpg']
 		},
 		{
-			id: 2, name: 'chen', gender: 'f', birth: '1991', description: 'love to love',
+			id: 2, name: 'chen', gender: 'f', birth: '1991', description: 'love to love',chatUser:null,socket:null,
 			userName: '222', password: '222', likes: {'1': true}, dislikes: {  }, matches: {1:true},
 			lastLine: "hola??", photos: ['http://dreamatico.com/data_images/woman/woman-2.jpg']
 		},
 		{
-			id: 3, name: 'keren', gender: 'f', birth: '1995', description: 'love to love',
+			id: 3, name: 'keren', gender: 'f', birth: '1995', description: 'love to love',chatUser:null,socket:null,
 			userName: '333', password: '333', likes: { '1': true }, dislikes: { '45': false }, matches: {},
 			lastLine: "daaa??", photos: ['http://dreamatico.com/data_images/woman/woman-3.jpg']
 		},
 		{
-			id: 4, name: 'inbar', gender: 'f', birth: '1996', description: 'love to love',
+			id: 4, name: 'inbar', gender: 'f', birth: '1996', description: 'love to love',chatUser:null,socket:null,
 			userName: '444', password: '444', likes: { '2': true, '11': false }, dislikes: { '4': false }, matches: {},
 			lastLine: "dooo??", photos: ['http://dreamatico.com/data_images/woman/woman-4.jpg']
 		},
 		{
-			id: 11, name: 'yakterina', gender: 'f', birth: '1997', description: 'love is in the air',
+			id: 11, name: 'yakterina', gender: 'f', birth: '1997', description: 'love is in the air',chatUser:null,socket:null,
 			userName: '555', password: '555', likes: { '1': true, '2': false }, dislikes: { '2': false }, matches: {},
 			lastLine: "whatsapp??", photos: ['http://dreamatico.com/data_images/woman/woman-5.jpg']
 		},
 		{
-			id: 12, name: 'ilan', gender: 'm', birth: '1998', description: 'like to lora', userName: '666',
+			id: 12, name: 'ilan', gender: 'm', birth: '1998', description: 'like to lora', userName: '666',chatUser:null,socket:null,
 			password: '666', likes: { '1': true, '11': true, '12': true, '2': false }, dislikes: { '3': false }, matches: {}, lastLine: "whatsapp??", photos: ['http://dreamatico.com/data_images/woman/woman-6.jpg']
 		}
 	]
@@ -442,13 +442,13 @@ function getDocById(id) {
 // ==================================================================================
 // ==================================================================================
 var msgs = [
-			{id:'1',from:2,to:1,txt:'1-2'},
-			{id:'2',from:1,to:3,txt:'1-3'},
-			{id:'3',from:1,to:2,txt:'1-2'},
-			{id:'4',from:2,to:1,txt:'2-1'},
-			{id:'5',from:2,to:1,txt:'2-1'},
-			{id:'5',from:3,to:1,txt:'3-1'},
-			{id:'5',from:3,to:4,txt:'3-4'},
+			{id:'1',from:2,to:1,txt:'1-2',status:'at server'},
+			{id:'2',from:1,to:3,txt:'1-3',status:'at server'},
+			{id:'3',from:1,to:2,txt:'1-2',status:'at server'},
+			{id:'4',from:2,to:1,txt:'2-1',status:'at server'},
+			{id:'5',from:2,to:1,txt:'2-1',status:'at server'},
+			{id:'5',from:3,to:1,txt:'3-1',status:'at server'},
+			{id:'5',from:3,to:4,txt:'3-4',status:'at server'}
 			
 			
 			];
@@ -495,32 +495,33 @@ io.on('connection', function (socket) {
 			 askUserToInit(socket);
 			 return
 		}
-
+		updateVals(msg,socket);
 		switch (msg.type1) {
+			case 'getOurHistory'://    
+				getOurHistory(msg);
+			break;
+
 			case 'sendMsgToUser':
 				msgs.push(msg);
 				sendMsgToUser(msg.to,msg)
 				sendMsgToUser(msg.from,msg)
 				// if( msg.from !=msg.to)
 				break;
-			case 'sendMsgToAll':
-					// console.log('chat.js/sendMsgToAll: ' + msg);
-				sendAll('msg received', msg);
-				break;
-			case 'ilan':
-					console.log('chat.js/ilan: ' + msg);
-				ilan('msg received', msg);
-				break;
-			case 'UserReadAllMsgs'://
-					console.log('chat./UserReadAllMsgs: ' + msg);
-				UserReadAllMsgs(msg);
-				break;
+			// case 'sendMsgToAll':
+			// 		// console.log('chat.js/sendMsgToAll: ' + msg);
+			// 	sendAll('msg received', msg);
+			// 	break;
+			// case 'ilan':
+			// 		console.log('chat.js/ilan: ' + msg);
+			// 	ilan('msg received', msg);
+			// 	break;
+			// case 'UserReadAllMsgs'://
+			// 		console.log('chat./UserReadAllMsgs: ' + msg);
+			// 	UserReadAllMsgs(msg);
+			// 	break;
 			case 'userIsMovingOutOfChat'://
 					console.log('chat./userIsMovingOutOfChat: ' + msg);
 				userIsMovingOutOfChat(msg);
-				break;
-			case 'getMyHistory'://    
-					getMyHistory(msg);
 				break;
 			case 'initUser'://    
 					initUser(msg,socket);
@@ -533,6 +534,13 @@ io.on('connection', function (socket) {
 });
 //(msg)
 //====================================================================================
+function updateVals(msg,socket){
+	var idx= getUserIdxById(msg.from);
+	users[idx].chatUser = msg.to;
+	users[idx].socket = socket.id;
+}
+//====================================================================================
+
 function getMyHistory(msg){//
 	var msgs = getUserHistory(msg);
 	msg.msgs = msgs
@@ -567,6 +575,8 @@ function getUserHistory(msg){
 function userIsMovingOutOfChat(msg){//userIsMovingOutOfChat(msg);
 	var idx = getUserIdxById(msg.from);
 	users[idx].socket = null;
+	users[idx].chatUser = null;
+	
 	console.log('*******chat/userIsMovingOutOfChat/ user:', idx);
 }
 //====================================================================================
@@ -577,20 +587,15 @@ function askUserToInit(socket){//userIsMovingOutOfChat(msg);
 	io.to(socket.id).emit("msg received", jsonMsg);
 }
 //====================================================================================
-function getLastLine(from,to){
-	var msgs =get2UsersHistory(from,to);
-	var txt = msgs[msgs.length].txt;
-	return txt;
+function getLastLine(id1,id2){
+	var lastMsg=null;
+	var msgs =get2UsersHistory(id1,id2);
+	if(msgs){
+		lastMsg = msgs[msgs.length-1];
+	}
+	return lastMsg;
 }//
 //====================================================================================
-function UserReadAllMsgs(msg){
-	console.log('*******chat/UserReadAllMsgs/msg:',msg);
-	var msgs= getAllUnreadMsgs(msg.to,msg.from)
-	msg.msgs = msgs;
-	// getOurHistory(msg);//update msgs to sender side
-	msg.type1 = 'updateMsgs';//change type1 before sending 
-	sendMsgToUser(msg.from,msg)//update at pasive side
-}
 //====================================================================================
 function getAllUnreadMsgs(idFrom,IdTo){
 		var unReadMsgs = msgs.filter(function(msg){
@@ -608,29 +613,34 @@ function ilan(msg){
 	console.log('*******chat/ilan/msg:',filter);
 }
 //====================================================================================
-// function getOurHistory(filter) {
+function getOurHistory(filter) {
+	console.log('*******chat/getOurHistory/msg:',filter);
+	var to=filter.to
+	var from=filter.from;
+	var usersMsgs = msgs.filter(function(msg){
+		var bul1 = (msg.from ==to && msg.to ==from);
+		var bul2 = (msg.from ==from && msg.to ==to);
+		if(msg.from === to && msg.to === from) msg.status= 'read';
+		return(bul1)||(bul2);
+	});
 
-// 	console.log('*******chat/getMyHistory/msg:',filter);
-// 	// console.log('*******chat/getMyHistory/msgs:',filter.length);
-// 	var to=filter.to
-// 	var from=filter.from
-// 	var usersMsgs = get2UsersHistory(from,to);
-// 	console.log('*******chat/getMyHistory/userMsgs:',usersMsgs.length);
-// 	filter.msgs = usersMsgs;
-// 	var msg = JSON.stringify(filter);
-// 	// if(filter.socket) {
-// 		// io.to(filter.fromSocket).emit("msg received", jsonMsg);
-// 		sendMsgToUser(from,filter)
-// 	// }
-// }
+	console.log('*******chat/getMyHistory/userMsgs:',usersMsgs.length);
+	filter.msgs = usersMsgs;
+
+	sendMsgToUser(from,filter)
+
+	var user2 = getUserById(to);
+	if (user2 && user2.socket && user2.chatUser === from){
+		sendMsgToUser(to,filter)
+	}
+
+
+}
 //====================================================================================
 function get2UsersHistory(id1,id2) {
 	var usersMsgs = msgs.filter(function(msg){
-		// console.log('*******chat/getMyHistory/msg.from:',msg.from,'msg.userId/', user.id);
-		// return((msg.from ==from && msg.to ==to )||(msg.from ==to && msg.to ==from ));
 		var bul1 = (msg.from ==id2 && msg.to ==id1);
 		var bul2 = (msg.from ==id1 && msg.to ==id2);
-		
 		return(bul1)||(bul2);
 	});
 	console.log('*******chat/get2UsersHistory/userMsgs:',usersMsgs.length);

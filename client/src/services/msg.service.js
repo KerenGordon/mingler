@@ -4,7 +4,7 @@ import moment from 'moment';
 
 import ioClient from 'socket.io-client'
 //==============================================
-const msgs = [];
+const msgs = ['111'];
 const msgLocalId = 0;
 
 // const onlineUsers = [];
@@ -36,10 +36,11 @@ socket.on('msg received', function (strMsg) {
       
       
       switch (msg.type1) {
-        case 'getMyHistory':
+        case 'getOurHistory':
+            console.log('msg.service.return.getMyHistory1-',msgs )
             msgs.splice(0,msgs.length,...msg.msgs);
             // msgs.concat(msg.msgs);getMyHistory
-            console.log('msg.service.return.getMyHistory-',msgs.length )
+            console.log('msg.service.return.getMyHistory2-',msgs )
         break;
         case 'sendMsgToUser'://
             msgs.push(msg);
@@ -57,12 +58,15 @@ socket.on('msg received', function (strMsg) {
 
 });
 //==============================================
-function updateMsgs(msgsToUpdate){
-  msgsToUpdate.forEach((msg)=>{
-      var idx = getMsgIdxById(msg.id);
-        msgs.splice(idx,1,msg);
-      console.log('msg.service.updateMsg-', msg);
-  });
+function updateMsgs(newMsgs){
+//   msgsToUpdate.forEach((msg)=>{
+//       var idx = getMsgIdxById(msg.id);
+//         msgs.splice(idx,1,msg);
+//       console.log('msg.service.updateMsg-', msg);
+//   });
+    msgs.splice(0,msgs.length-1,newMsgs);
+    console.log('msg.service.updateMsg-', msg.length);
+
 }
 
 //====================================================================================
@@ -95,11 +99,22 @@ function deleteTypingMsg(msg){
 
 //==============================================
 const getMsgs = () =>{
+  
   return msgs;
 }
 //==============================================
-// const getOnlineUsers = () =>{
-//   return onlineUsers;
+// const get2UsersHistory = (msg) =>{  //id1=currUser, id2= chatUser
+  	
+//     var usersMsgs = msgs.filter(function(msg){
+// 		// console.log('*******chat/getMyHistory/msg.from:',msg.from,'msg.userId/', user.id);
+// 		// return((msg.from ==from && msg.to ==to )||(msg.from ==to && msg.to ==from ));
+// 		var bul1 = (msg.from ==id2 && msg.to ==id1);
+// 		var bul2 = (msg.from ==id1 && msg.to ==id2);
+		
+// 		return(bul1)||(bul2);
+// 	});
+// 	console.log('msg.service/get2UsersHistory:',usersMsgs.length);
+// 	return usersMsgs
 // }
 //==============================================
  const send = (msg) => {
@@ -147,6 +162,7 @@ function lorem(size=5)
 
 export default {
   getMsgs,
+//   get2UsersHistory,
   send,
   // getOnlineUsers
 }

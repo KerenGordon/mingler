@@ -6,10 +6,10 @@
         <swiper :options="swiperOption" ref="mySwiper">
           <swiper-slide v-for="(user, idx) in users" :key="idx" class="grid-content card" onSlideChangeEnd="onSwipe">
             <div class="img-container">
-              <img class="img-centered" :src="user.photos && user.photos[0]">
-            </div>
-            <div class= "like-opt">like!</div>
+              <img :src="user.photos && user.photos[0]">
+              <div class= "kkk"> tttttt</div>
 
+            </div>
             <div class="user-details">
               <h4>{{ user.name }}, {{ user.age }}</h4>
             </div>
@@ -73,8 +73,8 @@ export default {
       expand: false,
       newMatchFlag: false,
       newDate: 2017,
-      currentId: 0,//'TBD - need to grab ID from click',
-      userIdx: 0,
+      currentId: 'TBD - need to grab ID from click',
+      userIdx: 1,
       swiperOption: {
         effect: 'coverflow',
         grabCursor: true,
@@ -82,10 +82,10 @@ export default {
         prevButton: '.swiper-button-prev',
         loop: true,
         coverflow: {
-          rotate: 0,
-          stretch: 0,
-          depth: 0,
-          modifier:3,
+          rotate: 100,
+          stretch: 20,
+          depth: 100,
+          modifier: 1,
           slideShadows: false
         },
         onTransitionStart: (swiper) => {
@@ -100,7 +100,7 @@ export default {
     this.$store.dispatch({ type: GET_BROWSED });
     console.log('browse: created - after GET_BROWSED');
     this.$router.push('Browse');
-    this.swipeTo(0);
+    this.swipeTo(0)
 
   },
   computed: {
@@ -212,13 +212,7 @@ export default {
     }
   }
 }
-.like-opt{
-   color:green;
-   font-size:2em;
-   position:absolute;
-   top:30px;
-   left:30px;
- }
+
 .img-container {
   width: 30em;
   height: 23em;
@@ -279,5 +273,10 @@ export default {
   .expand {
     cursor: pointer;
   }
+.kkk{
+  background-color: black;
+  font-size:30px;
+  float:left;
+}
 
 </style>
