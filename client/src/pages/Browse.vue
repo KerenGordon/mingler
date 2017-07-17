@@ -175,13 +175,16 @@ export default {
 }
 
 .card {
-  background-color: rgba(250, 230, 230, 0.9);
+  // background-color: rgba(250, 230, 230, 0.9);
   overflow: hidden;
   .user-details>p {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: clip ellipsis;
   }
+}
+.md-card-media{
+  background-color: rgba(250, 230, 230, 0.9);
 }
 
 .actions {
@@ -220,21 +223,28 @@ export default {
    left:30px;
  }
 .img-container {
+  
   width: 30em;
   height: 23em;
   overflow: hidden;
   margin-top: 1em;
   position: relative;
 
-  img {
+  img-centered {
+    flex: none;
+
     position: absolute;
-    margin: auto;
-    min-height: 100%;
-    min-width: 100%;
-    left: -100%;
-    right: -100%;
-    top: -100%;
-    bottom: -100%;
+  //  left: 30%;
+  //  top: 50%;
+  //  transform: translateY(-10%) translateX(-10%);
+    
+    // margin: auto;
+    // min-height: 100%;
+    // min-width: 100%;
+    // left: -100%;
+    // right: -100%;
+    // top: -100%;
+    // bottom: -100%;
   }
 }
 

@@ -320,10 +320,10 @@ app.delete('/data/:objType/:id', function (req, res) {
 //====================================================================================
 // POST - addUser 
 app.post('/addUser', upload.single('file'), function (req, res) {
-	// console.log('req.body', req.body);
+	console.log('req.body', req.body);
 	const objType = req.params.objType;
 	cl("*************************************");
-	// cl('POST for req.body- ', req.body );
+	cl('POST for req.body- ', req.body );
 	const obj = req.body.data;
 	delete obj._id;
 	//console.dir( obj);
@@ -483,7 +483,10 @@ io.on('connection', function (socket) {
 			}
 		}
 	});
-	//====================
+	//=====================================================
+	//=====================================================
+	//=====================================================
+	//=====================================================
 	socket.on('sendMsg', function (msg) {
 		// console.log('chat.js/sendMsg: ' + msg);
 		msg = JSON.parse(msg);
@@ -533,6 +536,10 @@ io.on('connection', function (socket) {
 	});
 });
 //(msg)
+//====================================================================================
+//====================================================================================
+//====================================================================================
+//====================================================================================
 //====================================================================================
 function updateVals(msg,socket){
 	var idx= getUserIdxById(msg.from);

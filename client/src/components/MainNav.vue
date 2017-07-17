@@ -75,7 +75,10 @@ export default {
     top: 1.5em;
   }
 }
-
+.registered-user{
+  max-height: 1.3em;
+  overflow:hidden;
+}
 .logo {
   color: rgba(124, 1, 87, 1);
   text-transform: uppercase;

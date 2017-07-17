@@ -60,7 +60,7 @@
                 </div>
                 <div class="conversation">
                   <div class="conversation-container">
-<!-----{{msgs}}----->
+<!--{{msgs}}-->
                     <div  v-for="msg in msgs" v-if="msg.from === currUser.id || msg.from === chatUser.id " class="message" :class="msgClass(msg)">
                       <div class = " msg-from" >{{msg.fromName}}</div>
                       <!--<div v-if="msg.status" class = " msg-txt" >status: {{msg.status}}</div>-->

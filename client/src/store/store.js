@@ -1,5 +1,5 @@
 
-export const SND_MSG = 'SND_MSG';
+export const SND_MSG = 'SND_MSG';//
 export const LOG_IN = 'LOG_IN';
 export const ILAN = 'ILAN';
 export const LOG_OUT = 'LOG_OUT';
@@ -103,8 +103,11 @@ const mutations = {
     state.loginState = true;
     //console.log('store.mutation.LOG_OUT performed: ', state.currUser)
   },
-  [UPLOAD_PHOTO](state, { data }) {
-   console.log('store.mutation.UPLOAD_PHOTO: ')
+  [UPLOAD_PHOTO](state, payload) {
+   console.log('store.mutation.UPLOAD_PHOTO1: ', payload);
+   var url = payload.user;
+   state.currUser.photos.push(url);
+   console.log('store.mutation.UPLOAD_PHOTO2/ currUser.photos.length: ', state.currUser.photos.length);
   },
   [ILAN](state, { data }) {
    console.log('store.mutation.ILAN: ')
@@ -216,6 +219,7 @@ const actions = {//
   },
   [UPLOAD_PHOTO](context, payload) {
     console.log('store.actions.UPLOAD_PHOTO', payload)
+    // context.commit(payload);
     var prm = service.uploadPhoto(payload);
     prm.then(res => {
       payload.user = res;
