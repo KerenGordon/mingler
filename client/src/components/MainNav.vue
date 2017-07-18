@@ -1,29 +1,29 @@
 <template>
   <div>
-    <el-row >
+    <el-row>
       <el-col class="grid-content " :lg="{span: 2, offset: 1}" :md="{span: 2, offset: 1}" :sm="{span: 2, offset: 1}" :xs="{span: 2, offset: 1}">
-          <router-link to="/edit" class="edit-btn">
-            <img src="../assets/settings.png"> </router-link>
-           <div class="registered-user">{{this.currUser.name}}</div>
+        <router-link to="/edit" class="edit-btn">
+          <img src="../assets/settings.png"> </router-link>
+        <div class="registered-user">{{this.currUser.name}}</div>
       </el-col>
       <el-col class="grid-content " :lg="{span: 6, offset: 6}" :md="{span: 6, offset: 6}" :sm="{span: 6, offset: 6}" :xs="{span: 8, offset: 5}">
-          <router-link to="/browse">        
+        <router-link to="/browse">
           <h2 class="logo">
             Mingler
           </h2>
-          </router-link>
+        </router-link>
       </el-col>
       <el-col class="grid-content match-btn" :lg="{span: 2, offset: 6}" :md="{span: 2, offset: 6}" :sm="{span: 2, offset: 6}" :xs="{span: 2, offset: 5}">
         <div v-if="!isBrowseScreen" @click="navigate">
           <router-link to="/browse">
-            <img src="../assets/browse.png"> 
-            
-            </router-link>
+            <img src="../assets/browse.png">
+  
+          </router-link>
         </div>
         <div v-else @click="navigate" class="nav-back">
-          <router-link to="/matches">          
+          <router-link to="/matches">
             <img src="../assets/matched.png"> </router-link>
-          </div>
+        </div>
       </el-col>
   
     </el-row>
@@ -36,7 +36,7 @@ export default {
   data() {
     return {
       msg: 'Browse screen',
-    //  currUser:  this.$store.state.user.currUser
+      //  currUser:  this.$store.state.user.currUser
     }
   },
   // watch: {
@@ -45,10 +45,10 @@ export default {
   //   }
   // },
   computed: {
-    isBrowseScreen(){
-     return ( this.$route.name === "Browse" )
+    isBrowseScreen() {
+      return (this.$route.name === "Browse")
     },
-    currUser() {return this.$store.state.user.currUser } 
+    currUser() { return this.$store.state.user.currUser }
 
   },
   methods: {
@@ -61,7 +61,6 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
-
 .edit-btn img {
   width: 3em;
   margin: {
@@ -75,10 +74,12 @@ export default {
     top: 1.5em;
   }
 }
-.registered-user{
-  max-height: 1.3em;
-  overflow:hidden;
-}
+
+// .registered-user {
+//   max-height: 1.3em;
+//   overflow: hidden;
+// }
+
 .logo {
   color: rgba(124, 1, 87, 1);
   text-transform: uppercase;

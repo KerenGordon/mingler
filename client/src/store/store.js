@@ -54,10 +54,10 @@ import service from '../services/service'
 const state = {
   usersMatched: '',
   usersBrowsed:'',  //changed - 15/7 ilan
-  currUser: null,
-  user2: null,
+  currUser: '',
+  user2: '',
   lastMatch: {},
-  chatUser: null, //changed - 15/7 ilan
+  chatUser: '', //changed - 15/7 ilan
   loginStatus: true
 
 };
@@ -101,6 +101,10 @@ const mutations = {
     state.lastMatch = '';
     state.chatUser = '';
     state.loginState = true;
+    localStorage.removeItem('currUser');
+    localStorage.removeItem('chatUser');
+    localStorage.removeItem('browseUserIdx');
+    localStorage.removeItem('user');
     //console.log('store.mutation.LOG_OUT performed: ', state.currUser)
   },
   [UPLOAD_PHOTO](state, payload) {
@@ -186,11 +190,18 @@ const mutations = {
   [GET_VALS_FROM_STORAGE](state, { msg }) {
     console.log('store.mutation.GET_VALS_FROM_STORAGE: ', msg)
     if (!state.currUser){
-       state.currUser = JSON.parse(localStorage.getItem("currUser"));
+       var tempCurrUser= JSON.parse(localStorage.getItem("currUser"));
+       if(tempCurrUser){  
+            state.currUser = JSON.parse(localStorage.getItem("currUser"));
+       }
         console.log('store.GET_VALS_FROM_STORAGE, got currUser from storage: ', state.currUser)
     };
     if (!state.chatUser){
-       state.chatUser = JSON.parse(localStorage.getItem("chatUser"));
+       var tempChatUser= JSON.parse(localStorage.getItem("chatUser"));
+       if(tempChatUser){  
+            state.chatUser = JSON.parse(localStorage.getItem("chatUser"));
+       }
+        
         console.log('store.GET_VALS_FROM_STORAGE, got chatUser from storage: ', state.chatUser)
 
     };
