@@ -36,7 +36,6 @@ export default {
 
 @import url('https://fonts.googleapis.com/css?family=Kurale');
 #app {
-  // display: flex;
   // flex-direction: column;  
   font-family: 'Kurale', Helvetica, Arial, sans-serif;
   text-align: center;
