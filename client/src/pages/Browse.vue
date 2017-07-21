@@ -2,43 +2,61 @@
   <!--<div v-if="user">-->
   <div v-if="user" class = "main">
     <div id="browse-div" class="browse" ref="playground">
-      <!--<md-card-media v-if="!newMatch">-->
-      
-        <!--<div v-for="(user, idx) in users" :key="idx" class="img-frame" v-draggable v-draggable-touch -->
-      <transition name="fade">
-      <div v-if="user" 
-      </transition>
-      <transition name="fade">
-        <div v-if="drageVals.showUser" :user='users[0]' class="img-frame" v-draggable v-draggable-touch 
-              @mousemove="touchMove"  @touchmove="touchMove" 
-              @mousedown="dragModeTrue" @mouseup="dragModeFalse" 
-               @touchstart ="dragModeTrue" @touchend ="dragModeFalse" 
-              >
+
+      <!--users[1]-->
+          <div v-if="drageVals.showUser && users[nextUser]"  :user='users[nextUser]' class="img-frame"  >
                 <div class="img-container">
-                  <img v-if="user.photos" :src="user.photos && user.photos[0]">
+                  <img v-if="users[nextUser].photos" 
+                        :src="users[nextUser].photos && users[nextUser].photos[0]">
                 </div>
                 <div class="user-details">
-                      <h4 class = "photo-txt">{{ user.name }}, {{ user.age }}</h4>
-                </div>
+                      <!--<h4 class = "photo-txt">{{ users[nextUser].name }}, {{ users[nextUser].age }}</h4>-->
+                      <h4 class = "photo-txt">.</h4>
 
+
+                    <div class="description" v-show="expand">
+                      <h4>{{ users[nextUser].name }}, 1{{ newDate - users[nextUser].birth }}nextUser</h4>
+                      <p> {{users[nextUser].description}}
+                        <div class="expand">
+                          <p @click="expand = !expand">
+                            <md-icon>keyboard_arrow_down</md-icon>
+                          </p>
+                        </div>
+                    </div>
+                </div>
+        </div>
+
+
+
+      <!--users[0]  v-if="drageVals.showUser"    && users[userIdx]               -->
+       <transition name="fade">
+        <div v-if="drageVals.showUser "  :user='users[userIdx]' class="img-frame" 
+              v-draggable v-draggable-touch 
+              @mousemove="touchMove"  @touchmove="touchMove" 
+              @mousedown="dragModeTrue" @mouseup="dragModeFalse" 
+               @touchstart ="dragModeTrue" @touchend ="dragModeFalse" >
+                <div class="img-container">
+                  <!--<img v-if="users[userIdx].photos" :src="users[userIdx].photos && users[userIdx].photos[userIdx]">-->
+                  <img  :src="users[userIdx].photos && users[userIdx].photos[0]">
+                </div>
+                <div class="user-details">
+                      <h4 class = "photo-txt">{{ users[userIdx].name }}, {{ users[userIdx].age }}userIdx</h4>
+
+
+                    <div class="description" v-show="expand">
+                      <h4>{{ users[userIdx].name }}, {{ newDate - users[userIdx].birth }}</h4>
+                      <!--<p> Lorem ipsum dolor sit amet, consectetur adipisicing elit. Optio itaque ea, nostrum odio. Dolores, sed accusantium quasi non, voluptas eius illo quas, saepe voluptate pariatur in deleniti minus sint. Excepturi. </p>-->
+                      <p> {{users[userIdx].description}}
+                        <div class="expand">
+                          <p @click="expand = !expand">
+                            <md-icon>keyboard_arrow_down</md-icon>
+                          </p>
+                        </div>
+                    </div>
+                </div>
         </div>
       </transition>
 
-        <div class="description" v-show="expand">
-          <h4>{{ user.name }}, {{ newDate - user.birth }}</h4>
-          <!--<p> Lorem ipsum dolor sit amet, consectetur adipisicing elit. Optio itaque ea, nostrum odio. Dolores, sed accusantium quasi non, voluptas eius illo quas, saepe voluptate pariatur in deleniti minus sint. Excepturi. </p>-->
-          <p> {{user.description}}
-            <div class="expand">
-              <p @click="expand = !expand">
-                <md-icon>keyboard_arrow_down</md-icon>
-              </p>
-            </div>
-        </div>
-        <div class="expand">
-          <p @click="expand = !expand">
-            <md-icon>keyboard_arrow_up</md-icon>
-          </p>
-        </div>
   
     </div>
   
@@ -51,17 +69,21 @@
         <md-icon class="material-icons md-size-2x like heart">favorite</md-icon>
       </a>
     </section>
-    <div v-if="newMatch" class="match-popup">
-      <h1>Congratulations! </h1>
-      <h1> You have a NEW MATCH! </h1>
-      <img class="popup-image" :src="this.newMatch.photos[0]"></img>
-      <h2>You and {{this.newMatch.name}} like each other</h2>
-      <div class="popup-buttons">
-        <el-button class="button" @click="closePopup">CLOSE</el-button>
-        <el-button class="button" @click="viewMatches">View Matches</el-button>
-      </div>
-    </div>
-  
+    
+    <transition name="fade">
+          <div v-if="newMatch" transition="fade"  class="match-popup">
+            <h1>Congratulations! </h1>
+            <h1> You have a NEW MATCH! </h1>
+            <img class="popup-image" :src="this.newMatch.photos[0]"></img>
+            <h2>You and {{this.newMatch.name}} like each other</h2>
+            <div class="popup-buttons">
+              <el-button class="button" @click="closePopup">CLOSE</el-button>
+              <el-button class="button" @click="viewMatches">View Matches</el-button>
+            </div>
+          </div>
+    </transition>
+
+
   </div>
 </template>
 
@@ -89,6 +111,7 @@ export default {
       newDate: 2017,
       currentId: 'TBD - need to grab ID from click',
       userIdx: 0,
+      nextUser: 1,
       
       drageVals:{
         totalXDist : 0,
@@ -166,7 +189,7 @@ export default {
     //===================================
     touchMove(e){
           this.calculateCardPos(e)
-          console.log('touchMove.e.target', e.target.x , e.target.clientWidth );
+          // console.log('touchMove.e.target', e.target.x , e.target.clientWidth );
           // console.log(this.users[0] );
     },
     //===================================
@@ -177,11 +200,11 @@ export default {
       if(!vals.showUser || !vals.isDraged) return;
       // console.log('calculateCardPos.showUser', this.drageVals.showUser,'isDraged', this.drageVals.isDraged);
       if (e.target.x + e.target.clientWidth > e.path[3].clientWidth+ vals.diff ){
-          this.userLike();
+          this.userLike(e);
           console.log( "calculateCardPos.like");
       }
       if (e.target.x < -vals.diff ){
-          this.userDislike();
+          this.userDislike(e);
           console.log( "calculateCardPos.dislike");
       }
       if( !vals.initialLeft ){       //init vals
@@ -207,10 +230,10 @@ export default {
            vals.opacity = 1-(Math.abs(vals.xPersent)/2)
           
           vals.rotate =70 * vals.xPersent
-          e.path[2].style.opacity  = vals.opacity;
+          // e.path[2].style.opacity  = vals.opacity;
           // e.path[2].target.style.transform  =`rotate(${  this.drageVals.rotate}deg)`;
           e.path[2].style.transform  =`rotate(${  vals.rotate}deg)`;
-          console.log( "111111111.drageVals.xPersent:",vals.rotate )
+          // console.log( "111111111.drageVals.xPersent:",vals.rotate )
           // console.log( "111111111.drageVals.e.opacity:", e.path[1].target.style.opacity,
           //                                '/transform', e.path[1].target.style.transform );
           
@@ -231,41 +254,50 @@ export default {
       console.log('Browse: MOVE to edit')
       this.$router.push('Edit')
     },
-    userDislike() {
-      console.log('Browse: before DISLIKE! id:', this.user.id, this.userIdx, this.users.length)
+    userDislike(e) {
+      console.log('Browse: before DISLIKE! id:', this.userIdx, this.users.length)
       const msg = { id1: this.$store.state.user.currUser.id, id2: this.user.id, bul: false }
       this.$store.dispatch({ type: LIKE, data: msg })
-          this.userIdx = (this.users.length - 1 === this.userIdx) ? 0 : this.userIdx + 1;
-          // that.userIdx = (that.users.length - 1 === tempIdx) ? 0 : tempIdx + 1;
+          
+          // this.userIdx  = (this.userIdx === this.users.length - 1) ? 0 : this.userIdx + 1;
+          // this.nextUser = (this.nextUser === this.users.length - 1) ? 0 : this.userIdx + 1;
       
-      this.drageVals.isDraged =false;
-      this.drageVals.showUser =false;
-      var that = this
-      setTimeout(function() {
-            that.drageVals.showUser =true;
-      },400);
-  
-},
-    userLike() {
-      console.log( "888888888888888888userLike");
-      this.newMatchFlag = true;
-      console.log('Browse: BEFORE LIKE state:', this.$store.getters.fetchLastMatch)
-      console.log('Browse: currUser:', this.$store.state.user.currUser)
-
-
-      const msg = { id1: this.$store.state.user.currUser.id, id2: this.user.id, bul: true }
-      this.$store.dispatch({ type: LIKE, data: msg })
-        this.userIdx = (this.users.length - 1 === this.userIdx) ? 0 : this.userIdx + 1;
+      console.log('Browse:  DISLIKE! id:', this.userIdx, this.users.length)
       
       this.drageVals.isDraged =false;
       this.drageVals.showUser =false;
       var that = this;
+      // e.path[2].classList.add("fly-out")
+      // e.path[2].style.left ='-210px';
+
+      
       setTimeout(function() {
             that.drageVals.showUser =true;
-      },500);
-
+            that.userIdx  = (that.userIdx === that.users.length - 1) ? 0 : that.userIdx + 1;
+            that.nextUser = (that.nextUser === that.users.length - 1) ? 0 : that.userIdx + 1;
+            // e.path[2].classList.remove("fly-out")
+      },1);
   
+},
+    userLike(e) {
+      console.log( "888888888888888888userLike");
+      this.newMatchFlag = true;
+      console.log('Browse: before LIKE! id:', this.userIdx, this.users.length)
+      const msg = { id1: this.$store.state.user.currUser.id, id2: this.user.id, bul: true }
+      this.$store.dispatch({ type: LIKE, data: msg })
+      this.drageVals.isDraged =false;
+      this.drageVals.showUser =false;
+      var that = this;
+      // e.path[2].classList.add("fly-out")
+      // e.path[2].style.left ='-210px';
 
+      
+      setTimeout(function() {
+            that.drageVals.showUser =true;
+            that.userIdx  = (that.userIdx === that.users.length - 1) ? 0 : that.userIdx + 1;
+            that.nextUser = (that.nextUser === that.users.length - 1) ? 0 : that.userIdx + 1;
+            // e.path[2].classList.remove("fly-out")
+      },1);
   },
     viewMatches() {
       console.log('Browse: clicked on "VEIW MATCHES"')
@@ -279,9 +311,30 @@ export default {
 
   }
 }
+      // console.log('Browse: before LIKE! id:', this.userIdx, this.users.length)
+      // const msg = { id1: this.$store.state.user.currUser.id, id2: this.user.id, bul: true }
+      // this.drageVals.isDraged =false;
+      // this.drageVals.showUser =false;
+      // var that = this;
+      // // e.path[2].classList.add("fly-out")
+      // e.path[2].style.left ='-210px';
+
+      
+      // setTimeout(function() {
+      //       that.drageVals.showUser =true;
+      //       that.userIdx  = (that.userIdx === that.users.length - 1) ? 0 : that.userIdx + 1;
+      //       that.nextUser = (that.nextUser === that.users.length - 1) ? 0 : that.userIdx + 1;
+      //       // e.path[2].classList.remove("fly-out")
+      // },1);
+  
+
 </script>
 
 <style scoped lang="scss">
+.fly-out{
+  transition: 0.2 all;
+}
+
 .main{
     overflow: hidden;
   }
@@ -333,7 +386,7 @@ export default {
   }
 }
 .img-frame{
-    // height:200px;
+    // transition: all 0.2s;
     background: lightgrey;
 }
 
@@ -408,7 +461,7 @@ export default {
 }
 
 .fade-enter-active, .fade-leave-active {
-  transition: opacity .5s
+  transition: opacity .01s
 }
 .fade-enter, .fade-leave-to /* .fade-leave-active in <2.1.8 */ {
   opacity: 0
